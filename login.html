@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 font-sans text-slate-800 antialiased">
+
+    <div id="loading" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex-col items-center justify-center text-white">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <div class="text-sm font-medium">Signing in...</div>
+    </div>
+
+    <div id="error-toast"
+        class="fixed top-5 right-5 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg hidden transform transition-all duration-300 translate-y-[-20px] opacity-0">
+        <i class="fa-solid fa-circle-exclamation mr-2"></i> <span id="error-msg">Error message</span>
+    </div>
+
+    <div
+        class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="glass-card w-full max-w-md p-8 rounded-2xl shadow-2xl relative z-10 mx-4">
+            <div class="text-center mb-8">
+                <div
+                    class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-hotel text-2xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800">Welcome Back</h1>
+                <p class="text-slate-500 text-sm mt-1">Sign in to access your portal</p>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email
+                        Address</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="email"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="student@hostel.com" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="password"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="••••••••" required>
+                        <button type="button" onclick="togglePass()"
+                            class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox"
+                            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-slate-500 font-medium">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm font-bold text-blue-600 hover:text-blue-700">Forgot password?</a>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+                    Sign In
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-slate-100 text-center">
+                <p class="text-xs text-slate-400 mb-3">Demo Credentials (Click to fill):</p>
+                <div class="flex flex-wrap justify-center gap-2">
+                    <button onclick="fillLogin('student@hostel.com', 'student123')"
+                        class="px-2 py-1 text-xs font-mono bg-blue-50 text-blue-600 rounded border border-blue-100 hover:bg-blue-100">Student</button>
+                    <button onclick="fillLogin('admin@hostel.com', 'admin123')"
+                        class="px-2 py-1 text-xs font-mono bg-purple-50 text-purple-600 rounded border border-purple-100 hover:bg-purple-100">Admin</button>
+                    <button onclick="fillLogin('warden@hostel.com', 'warden123')"
+                        class="px-2 py-1 text-xs font-mono bg-emerald-50 text-emerald-600 rounded border border-emerald-100 hover:bg-emerald-100">Warden</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sidebar-container"></div>
+
+    <script>
+        fetch("components/sidebar.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("sidebar-container").innerHTML = data;
+            });
+    </script>
+    <script>
+        const users = [
+            { id: 1, email: 'admin@hostel.com', password: 'admin123', name: 'System Admin', role: 'admin', avatar: 'AD' },
+            { id: 2, email: 'student@hostel.com', password: 'student123', name: 'Sreya Merin', role: 'student', room: '204-B', hostel: 'Ladies Hostel', avatar: 'SM', id_no: '2026011' },
+            { id: 3, email: 'warden@hostel.com', password: 'warden123', name: 'Dr. Sarah Smith', role: 'warden', block: 'Ladies Hostel', avatar: 'SS' }
+        ];
+
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const loader = document.getElementById('loading');
+
+            loader.style.display = 'flex';
+
+            // Simulate API Call
+            setTimeout(() => {
+                const user = users.find(u => u.email === email && u.password === pass);
+
+                if (user) {
+                    // Success: Save user (excluding password) to localStorage
+                    const { password, ...safeUser } = user;
+                    localStorage.setItem('hms_user', JSON.stringify(safeUser));
+
+                    // Redirect to dashboard (index.html)
+                    window.location.href = 'index.html';
+                } else {
+                    // Error
+                    loader.style.display = 'none';
+                    showError('Invalid email or password');
+                }
+            }, 800);
+        });
+
+        function togglePass() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function fillLogin(u, p) {
+            document.getElementById('email').value = u;
+            document.getElementById('password').value = p;
+        }
+
+        function showError(msg) {
+            const toast = document.getElementById('error-toast');
+            document.getElementById('error-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+            }, 10);
+
+            // Hide after 3s
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

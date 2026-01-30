@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,28 +9,55 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         /* Animations */
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
         }
     </style>
 </head>
+
 <body class="bg-slate-50 font-sans text-slate-800">
 
     <div class="flex h-screen overflow-hidden relative">
-        
+
         <!-- SIDEBAR NAVIGATION -->
         <!-- Hidden on mobile by default, toggled via JS -->
-        <aside id="sidebar" class="absolute md:relative z-30 w-64 h-full bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl">
+        <aside id="sidebar"
+            class="absolute md:relative z-30 w-64 h-full bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl">
             <!-- Brand -->
             <div class="p-6 border-b border-slate-800 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -46,105 +74,147 @@
 
             <!-- Navigation Links -->
             <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto custom-scrollbar">
-                <button onclick="showSection('dashboard', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 bg-blue-600/10 text-blue-400 border-r-4 border-blue-500">
+                <button onclick="showSection('dashboard', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 bg-blue-600/10 text-blue-400 border-r-4 border-blue-500">
                     <i class="fa-solid fa-chart-line w-5"></i> Dashboard
                 </button>
-                
+                <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Account</div>
+
+                <button onclick="showSection('notifications', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                    <div class="relative">
+                        <i class="fa-solid fa-bell w-5"></i>
+                        <span
+                            class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900"></span>
+                    </div>
+                    Notifications
+                </button>
+
+                <button onclick="showSection('profile', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                    <i class="fa-solid fa-user-gear w-5"></i> My Profile
+                </button>
                 <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Admissions</div>
-                <button onclick="showSection('admission-app', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('admission-app', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-file-signature w-5"></i> Admission App
                 </button>
-                <button onclick="showSection('allocation-status', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('allocation-status', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-bed w-5"></i> Allocation Status
                 </button>
 
                 <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Services</div>
-                <button onclick="showSection('room-change', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('room-change', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-right-left w-5"></i> Room Change
                 </button>
-                <button onclick="showSection('complaints', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('complaints', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-triangle-exclamation w-5"></i> Complaints
                 </button>
 
                 <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Records</div>
-                <button onclick="showSection('fees', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('fees', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-credit-card w-5"></i> Fee Payment
                 </button>
-                <button onclick="showSection('attendance', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <button onclick="showSection('attendance', this)"
+                    class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
                     <i class="fa-solid fa-calendar-check w-5"></i> Attendance
                 </button>
             </nav>
-            
+
             <!-- User Profile Snippet -->
             <div class="p-4 border-t border-slate-800 bg-slate-900/50">
                 <div class="flex items-center gap-3 px-2">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-sm font-bold shadow-lg">SM</div>
+                    <div
+                        class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-sm font-bold shadow-lg">
+                        SM</div>
                     <div class="overflow-hidden">
                         <p class="font-medium text-sm truncate">Sreya Merin</p>
                         <p class="text-xs text-slate-400">ID: 2026011</p>
                     </div>
-                    <button class="ml-auto text-slate-400 hover:text-white"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button onclick="logoutUser()" class="p-2 text-slate-400 hover:text-red-400 transition"
+                        title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
                 </div>
             </div>
         </aside>
 
         <!-- Overlay for mobile -->
-        <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden glass-card"></div>
+        <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden glass-card">
+        </div>
 
         <!-- MAIN CONTENT AREA -->
         <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-slate-50">
-            
+
             <!-- Mobile Header -->
-            <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center md:hidden sticky top-0 z-10">
+            <header
+                class="bg-white border-b border-slate-200 p-4 flex justify-between items-center md:hidden sticky top-0 z-10">
                 <h1 class="font-bold text-slate-700">Hostel Portal</h1>
-                <button onclick="toggleSidebar()" class="text-slate-600 w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100">
+                <button onclick="toggleSidebar()"
+                    class="text-slate-600 w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100">
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
             </header>
 
             <!-- Scrollable Page Content -->
             <div class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10 scroll-smooth" id="content-area">
-                
+
                 <!-- 1. DASHBOARD -->
                 <div id="dashboard" class="section fade-in max-w-6xl mx-auto">
                     <div class="flex justify-between items-end mb-8">
                         <div>
                             <h2 class="text-2xl font-bold text-slate-800">Welcome back !</h2>
-                            
+
                         </div>
-                        <span class="hidden md:inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium border border-green-200">
+                        <span
+                            class="hidden md:inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium border border-green-200">
                             <i class="fa-solid fa-circle text-[10px] mr-1"></i> Active Resident
                         </span>
                     </div>
 
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
-                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-file-invoice text-6xl text-yellow-500"></i></div>
+                        <div
+                            class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i
+                                    class="fa-solid fa-file-invoice text-6xl text-yellow-500"></i></div>
                             <div class="text-slate-500 text-sm font-medium mb-1">Fee Status</div>
                             <div class="text-2xl font-bold text-slate-800">Pending</div>
-                            <div class="mt-2 text-xs text-red-500 font-semibold bg-red-50 inline-block px-2 py-1 rounded">Due: ₹15,500</div>
+                            <div
+                                class="mt-2 text-xs text-red-500 font-semibold bg-red-50 inline-block px-2 py-1 rounded">
+                                Due: ₹15,500</div>
                         </div>
-                        
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
-                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-calendar-check text-6xl text-blue-500"></i></div>
+
+                        <div
+                            class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i
+                                    class="fa-solid fa-calendar-check text-6xl text-blue-500"></i></div>
                             <div class="text-slate-500 text-sm font-medium mb-1">Attendance (Jan)</div>
                             <div class="text-2xl font-bold text-slate-800">92%</div>
                             <div class="mt-2 text-xs text-slate-400">22 Present / 24 Days</div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
-                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-bell text-6xl text-purple-500"></i></div>
+                        <div
+                            class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i
+                                    class="fa-solid fa-bell text-6xl text-purple-500"></i></div>
                             <div class="text-slate-500 text-sm font-medium mb-1">Notifications</div>
                             <div class="text-2xl font-bold text-slate-800">3 New</div>
                             <div class="mt-2 text-xs text-blue-600 hover:underline cursor-pointer">View all</div>
                         </div>
 
-                        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
-                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i class="fa-solid fa-wrench text-6xl text-orange-500"></i></div>
+                        <div
+                            class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition">
+                            <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition"><i
+                                    class="fa-solid fa-wrench text-6xl text-orange-500"></i></div>
                             <div class="text-slate-500 text-sm font-medium mb-1">Complaints</div>
                             <div class="text-2xl font-bold text-slate-800">1 Active</div>
-                            <div class="mt-2 text-xs text-orange-500 bg-orange-50 inline-block px-2 py-1 rounded">In Progress</div>
+                            <div class="mt-2 text-xs text-orange-500 bg-orange-50 inline-block px-2 py-1 rounded">In
+                                Progress</div>
                         </div>
                     </div>
 
@@ -189,61 +259,80 @@
                 <div id="admission-app" class="section hidden fade-in max-w-4xl mx-auto">
                     <h2 class="text-2xl font-bold mb-2 text-slate-800">New Admission Application</h2>
                     <p class="text-slate-500 mb-6">Apply for the upcoming academic year 2026-2027.</p>
-                    
+
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="bg-blue-50 border-l-4 border-blue-500 p-4 flex items-start gap-3">
                             <i class="fa-solid fa-circle-info mt-0.5 text-blue-600"></i>
                             <div>
                                 <p class="text-sm text-blue-800 font-medium">Priority Allocation Active</p>
-                                <p class="text-xs text-blue-600 mt-1">Rooms are allocated based on year of study, merit, and distance from home town.</p>
+                                <p class="text-xs text-blue-600 mt-1">Rooms are allocated based on year of study, merit,
+                                    and distance from home town.</p>
                             </div>
                         </div>
 
-                        <form class="p-6 md:p-8" onsubmit="event.preventDefault(); alert('Application Submitted Successfully!');">
+                        <form class="p-6 md:p-8"
+                            onsubmit="event.preventDefault(); alert('Application Submitted Successfully!');">
                             <!-- Section 1 -->
-                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">1</span> Personal Details
+                            <h3
+                                class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">1</span>
+                                Personal Details
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">First Name</label>
-                                    <input type="text" value="Sreya " readonly class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2.5 text-slate-500 cursor-not-allowed">
+                                    <input type="text" value="Sreya " readonly
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2.5 text-slate-500 cursor-not-allowed">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
-                                    <input type="text" value="Merin" readonly class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2.5 text-slate-500 cursor-not-allowed">
+                                    <input type="text" value="Merin" readonly
+                                        class="w-full bg-slate-50 border border-slate-300 rounded-lg px-3 py-2.5 text-slate-500 cursor-not-allowed">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Guardian Name</label>
-                                    <input type="text" placeholder="Enter Guardian Name" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <input type="text" placeholder="Enter Guardian Name"
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Emergency Contact</label>
-                                    <input type="tel" placeholder="+91 99999 00000" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Emergency
+                                        Contact</label>
+                                    <input type="tel" placeholder="+91 99999 00000"
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                 </div>
                                 <div class="md:col-span-2">
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Distance from Home (km) <span class="text-red-500">*</span></label>
-                                    <input type="number" placeholder="e.g. 150" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Distance from Home
+                                        (km) <span class="text-red-500">*</span></label>
+                                    <input type="number" placeholder="e.g. 150"
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
                                     <p class="text-xs text-slate-500 mt-1">Used for calculating priority score.</p>
                                 </div>
                             </div>
 
                             <!-- Section 2 -->
-                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">2</span> Preferences
+                            <h3
+                                class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span
+                                    class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">2</span>
+                                Preferences
                             </h3>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Room Priority 1</label>
-                                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Room Priority
+                                        1</label>
+                                    <select
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
                                         <option>Single Room (AC)</option>
                                         <option>Double Room (Non-AC)</option>
                                         <option>4-Sharing (General)</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Room Priority 2</label>
-                                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Room Priority
+                                        2</label>
+                                    <select
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
                                         <option>Double Room (Non-AC)</option>
                                         <option>Single Room (AC)</option>
                                         <option>4-Sharing (General)</option>
@@ -251,7 +340,8 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Mess Type</label>
-                                    <select class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <select
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
                                         <option>Vegetarian</option>
                                         <option>Non-Vegetarian</option>
                                         <option>Mixed</option>
@@ -260,8 +350,11 @@
                             </div>
 
                             <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-100">
-                                <button type="button" class="text-slate-500 hover:text-slate-700 font-medium">Cancel</button>
-                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition transform hover:scale-[1.02]">Submit Application</button>
+                                <button type="button"
+                                    class="text-slate-500 hover:text-slate-700 font-medium">Cancel</button>
+                                <button type="submit"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition transform hover:scale-[1.02]">Submit
+                                    Application</button>
                             </div>
                         </form>
                     </div>
@@ -270,15 +363,18 @@
                 <!-- 3. ALLOCATION STATUS -->
                 <div id="allocation-status" class="section hidden fade-in max-w-5xl mx-auto">
                     <h2 class="text-2xl font-bold mb-6 text-slate-800">Allocation Status</h2>
-                    
+
                     <!-- Tracker -->
                     <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 mb-8">
                         <div class="relative">
-                            <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 hidden md:block rounded"></div>
+                            <div
+                                class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 hidden md:block rounded">
+                            </div>
                             <div class="flex flex-col md:flex-row justify-between relative z-10 gap-6 md:gap-0">
                                 <!-- Step 1 -->
                                 <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
-                                    <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white">
                                         <i class="fa-solid fa-check"></i>
                                     </div>
                                     <div class="md:text-center">
@@ -288,7 +384,8 @@
                                 </div>
                                 <!-- Step 2 -->
                                 <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
-                                    <div class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white">
                                         <i class="fa-solid fa-check"></i>
                                     </div>
                                     <div class="md:text-center">
@@ -298,7 +395,8 @@
                                 </div>
                                 <!-- Step 3 -->
                                 <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
-                                    <div class="w-10 h-10 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white animate-pulse">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white animate-pulse">
                                         <i class="fa-solid fa-hourglass-half"></i>
                                     </div>
                                     <div class="md:text-center">
@@ -308,7 +406,8 @@
                                 </div>
                                 <!-- Step 4 -->
                                 <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2 opacity-50">
-                                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white">
                                         <i class="fa-solid fa-key"></i>
                                     </div>
                                     <div class="md:text-center">
@@ -321,30 +420,35 @@
                     </div>
 
                     <!-- Details Card (Mockup for when allocated) -->
-                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center text-center bg-slate-50">
-                        <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400">
+                    <div
+                        class="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center text-center bg-slate-50">
+                        <div
+                            class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400">
                             <i class="fa-solid fa-building-user text-2xl"></i>
                         </div>
                         <h3 class="text-lg font-bold text-slate-700">No Room Allocated Yet</h3>
-                        <p class="text-slate-500 max-w-md mt-2">Your application has been verified and is currently in the allocation pool. Please check back in 2-3 days.</p>
+                        <p class="text-slate-500 max-w-md mt-2">Your application has been verified and is currently in
+                            the allocation pool. Please check back in 2-3 days.</p>
                     </div>
                 </div>
 
                 <!-- 4. ROOM CHANGE REQUEST -->
                 <div id="room-change" class="section hidden fade-in max-w-6xl mx-auto">
                     <h2 class="text-2xl font-bold mb-6 text-slate-800">Room Change Request</h2>
-                    
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <!-- Left: Form -->
                         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                             <div class="flex items-center justify-between mb-6">
                                 <h3 class="font-bold text-slate-700">Submit New Request</h3>
-                                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">Current: Room 304</span>
+                                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">Current:
+                                    Room 304</span>
                             </div>
-                            
+
                             <form>
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Reason Category</label>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Reason
+                                        Category</label>
                                     <select class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none">
                                         <option>Medical Issue</option>
                                         <option>Roommate Conflict</option>
@@ -353,14 +457,20 @@
                                     </select>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Preferred Block</label>
-                                    <input type="text" placeholder="e.g. Block B, Ground Floor" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Preferred
+                                        Block</label>
+                                    <input type="text" placeholder="e.g. Block B, Ground Floor"
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none">
                                 </div>
                                 <div class="mb-6">
-                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Detailed Explanation</label>
-                                    <textarea rows="4" placeholder="Explain why you need this change..." class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none resize-none"></textarea>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Detailed
+                                        Explanation</label>
+                                    <textarea rows="4" placeholder="Explain why you need this change..."
+                                        class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none resize-none"></textarea>
                                 </div>
-                                <button class="w-full bg-slate-800 text-white font-medium py-2.5 rounded-lg hover:bg-slate-900 transition">Submit Request</button>
+                                <button
+                                    class="w-full bg-slate-800 text-white font-medium py-2.5 rounded-lg hover:bg-slate-900 transition">Submit
+                                    Request</button>
                             </form>
                         </div>
 
@@ -376,11 +486,14 @@
                                     <div class="flex-1">
                                         <div class="flex justify-between items-start">
                                             <h4 class="font-semibold text-slate-800 text-sm">Upgrade to Single Room</h4>
-                                            <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded font-medium">Rejected</span>
+                                            <span
+                                                class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded font-medium">Rejected</span>
                                         </div>
                                         <p class="text-xs text-slate-500 mt-1">Submitted: 10 Jan 2026</p>
-                                        <div class="mt-2 bg-white p-2 rounded border border-slate-200 text-xs text-slate-600">
-                                            <strong>Admin Note:</strong> No vacancies available in single rooms currently.
+                                        <div
+                                            class="mt-2 bg-white p-2 rounded border border-slate-200 text-xs text-slate-600">
+                                            <strong>Admin Note:</strong> No vacancies available in single rooms
+                                            currently.
                                         </div>
                                     </div>
                                 </div>
@@ -393,7 +506,8 @@
                 <div id="complaints" class="section hidden fade-in max-w-5xl mx-auto">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-slate-800">Complaints & Issues</h2>
-                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
+                        <button
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
                             <i class="fa-solid fa-plus"></i> Report Issue
                         </button>
                     </div>
@@ -401,26 +515,36 @@
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                         <!-- Tabs -->
                         <div class="flex border-b border-slate-200">
-                            <button class="px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50/50">Active (1)</button>
-                            <button class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50">Resolved (5)</button>
+                            <button
+                                class="px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50/50">Active
+                                (1)</button>
+                            <button
+                                class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50">Resolved
+                                (5)</button>
                         </div>
 
                         <!-- List -->
                         <div class="divide-y divide-slate-100">
                             <!-- Item -->
-                            <div class="p-6 hover:bg-slate-50 transition flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                            <div
+                                class="p-6 hover:bg-slate-50 transition flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
                                 <div class="flex gap-4 items-center">
-                                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
+                                    <div
+                                        class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center">
                                         <i class="fa-solid fa-wrench"></i>
                                     </div>
                                     <div>
                                         <h4 class="font-bold text-slate-800 text-sm">Leaking Tap in Bathroom</h4>
-                                        <p class="text-xs text-slate-500 mt-0.5">ID: #CMP-2026-92 • Plumbing • 2 days ago</p>
+                                        <p class="text-xs text-slate-500 mt-0.5">ID: #CMP-2026-92 • Plumbing • 2 days
+                                            ago</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                                    <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full border border-orange-200">In Progress</span>
-                                    <button class="text-slate-400 hover:text-blue-600"><i class="fa-solid fa-chevron-right"></i></button>
+                                    <span
+                                        class="px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full border border-orange-200">In
+                                        Progress</span>
+                                    <button class="text-slate-400 hover:text-blue-600"><i
+                                            class="fa-solid fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -430,15 +554,18 @@
                 <!-- 6. FEE PAYMENT -->
                 <div id="fees" class="section hidden fade-in max-w-5xl mx-auto">
                     <h2 class="text-2xl font-bold mb-6 text-slate-800">Fee & Payments</h2>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                         <!-- Due Card -->
-                        <div class="col-span-1 bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+                        <div
+                            class="col-span-1 bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
                             <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
                             <h3 class="text-red-100 text-sm font-medium uppercase mb-1">Total Outstanding</h3>
                             <div class="text-3xl font-bold mb-4">₹ 15,500</div>
                             <p class="text-xs text-red-100 mb-6">Due Date: 10 Feb 2026</p>
-                            <button class="w-full bg-white text-red-600 font-bold py-2 rounded shadow hover:bg-red-50 transition">Pay Now</button>
+                            <button
+                                class="w-full bg-white text-red-600 font-bold py-2 rounded shadow hover:bg-red-50 transition">Pay
+                                Now</button>
                         </div>
 
                         <!-- Info -->
@@ -487,15 +614,21 @@
                                     <td class="p-4 text-slate-600">10 Dec 2025</td>
                                     <td class="p-4 font-medium text-slate-800">Mess Fee (Dec)</td>
                                     <td class="p-4 text-slate-600">₹ 3,500</td>
-                                    <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">Paid</span></td>
-                                    <td class="p-4 text-right"><button class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-download"></i></button></td>
+                                    <td class="p-4"><span
+                                            class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">Paid</span>
+                                    </td>
+                                    <td class="p-4 text-right"><button class="text-blue-600 hover:text-blue-800"><i
+                                                class="fa-solid fa-download"></i></button></td>
                                 </tr>
                                 <tr class="hover:bg-slate-50">
                                     <td class="p-4 text-slate-600">15 Aug 2025</td>
                                     <td class="p-4 font-medium text-slate-800">Annual Hostel Admission</td>
                                     <td class="p-4 text-slate-600">₹ 5,000</td>
-                                    <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">Paid</span></td>
-                                    <td class="p-4 text-right"><button class="text-blue-600 hover:text-blue-800"><i class="fa-solid fa-download"></i></button></td>
+                                    <td class="p-4"><span
+                                            class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-bold">Paid</span>
+                                    </td>
+                                    <td class="p-4 text-right"><button class="text-blue-600 hover:text-blue-800"><i
+                                                class="fa-solid fa-download"></i></button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -507,9 +640,11 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                         <h2 class="text-2xl font-bold text-slate-800">Attendance Record</h2>
                         <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
-                            <button class="px-3 py-1 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-chevron-left"></i></button>
+                            <button class="px-3 py-1 text-slate-400 hover:text-slate-600"><i
+                                    class="fa-solid fa-chevron-left"></i></button>
                             <span class="text-sm font-bold text-slate-700 px-2">January 2026</span>
-                            <button class="px-3 py-1 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-chevron-right"></i></button>
+                            <button class="px-3 py-1 text-slate-400 hover:text-slate-600"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
                         </div>
                     </div>
 
@@ -525,42 +660,79 @@
                                 <div class="text-xs font-bold text-slate-400 uppercase">Fri</div>
                                 <div class="text-xs font-bold text-slate-400 uppercase">Sat</div>
                             </div>
-                            
+
                             <!-- Calendar Days Grid -->
                             <div class="grid grid-cols-7 gap-2">
                                 <!-- Empty Spacers for start of month -->
-                                <div class="aspect-square"></div><div class="aspect-square"></div><div class="aspect-square"></div>
-                                
-                                <!-- Days -->
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200" title="Present">1</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200" title="Present">2</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200" title="Present">3</div>
-                                <div class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">4</div>
-                                
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">5</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">6</div>
-                                <div class="aspect-square rounded-lg bg-red-100 text-red-700 flex items-center justify-center text-sm font-bold border border-red-200" title="Absent">7</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">8</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">9</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">10</div>
-                                <div class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">11</div>
+                                <div class="aspect-square"></div>
+                                <div class="aspect-square"></div>
+                                <div class="aspect-square"></div>
 
-                                <div class="aspect-square rounded-lg bg-yellow-100 text-yellow-700 flex items-center justify-center text-sm font-bold border border-yellow-200" title="Late Entry">12</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">13</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">14</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">15</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">16</div>
-                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">17</div>
-                                <div class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">18</div>
+                                <!-- Days -->
+                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200"
+                                    title="Present">1</div>
+                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200"
+                                    title="Present">2</div>
+                                <div class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200"
+                                    title="Present">3</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">
+                                    4</div>
+
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    5</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    6</div>
+                                <div class="aspect-square rounded-lg bg-red-100 text-red-700 flex items-center justify-center text-sm font-bold border border-red-200"
+                                    title="Absent">7</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    8</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    9</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    10</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">
+                                    11</div>
+
+                                <div class="aspect-square rounded-lg bg-yellow-100 text-yellow-700 flex items-center justify-center text-sm font-bold border border-yellow-200"
+                                    title="Late Entry">12</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    13</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    14</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    15</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    16</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm font-bold border border-green-200">
+                                    17</div>
+                                <div
+                                    class="aspect-square rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center text-sm font-medium border border-slate-100">
+                                    18</div>
 
                                 <!-- ... filler for rest of month -->
                             </div>
-                            
+
                             <div class="flex gap-4 mt-6 justify-center">
-                                <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-green-500 rounded-sm"></span> Present</div>
-                                <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-red-500 rounded-sm"></span> Absent</div>
-                                <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-yellow-400 rounded-sm"></span> Late</div>
-                                <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-slate-200 rounded-sm"></span> Holiday</div>
+                                <div class="flex items-center gap-2 text-xs text-slate-600"><span
+                                        class="w-3 h-3 bg-green-500 rounded-sm"></span> Present</div>
+                                <div class="flex items-center gap-2 text-xs text-slate-600"><span
+                                        class="w-3 h-3 bg-red-500 rounded-sm"></span> Absent</div>
+                                <div class="flex items-center gap-2 text-xs text-slate-600"><span
+                                        class="w-3 h-3 bg-yellow-400 rounded-sm"></span> Late</div>
+                                <div class="flex items-center gap-2 text-xs text-slate-600"><span
+                                        class="w-3 h-3 bg-slate-200 rounded-sm"></span> Holiday</div>
                             </div>
                         </div>
 
@@ -568,9 +740,10 @@
                         <div class="space-y-4">
                             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
                                 <div class="text-4xl font-bold text-blue-600 mb-1">92%</div>
-                                <div class="text-sm text-slate-500 font-medium uppercase tracking-wide">Attendance Score</div>
+                                <div class="text-sm text-slate-500 font-medium uppercase tracking-wide">Attendance Score
+                                </div>
                             </div>
-                            
+
                             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                                 <h4 class="font-bold text-slate-700 mb-4 text-sm">Summary</h4>
                                 <div class="space-y-3">
@@ -595,7 +768,99 @@
                         </div>
                     </div>
                 </div>
+                <div id="notifications" class="section hidden fade-in max-w-4xl mx-auto space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Notifications</h2>
+                            <p class="text-slate-500 text-sm mt-1">Updates and alerts</p>
+                        </div>
+                        <button class="text-blue-600 text-sm font-medium hover:underline">Mark all as read</button>
+                    </div>
+                    <div id="notification-list" class="space-y-4">
+                    </div>
+                </div>
 
+                <div id="profile" class="section hidden fade-in max-w-4xl mx-auto space-y-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
+                        <div class="px-8 pb-8">
+                            <div class="relative flex justify-between items-end -mt-12 mb-6">
+                                <div class="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg">
+                                    <div id="profile-avatar-large"
+                                        class="w-full h-full rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-3xl font-bold text-white">
+                                        SM
+                                    </div>
+                                </div>
+                                <button
+                                    class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-slate-50 transition">
+                                    Edit Profile
+                                </button>
+                            </div>
+                            <div>
+                                <h2 id="profile-name-large" class="text-2xl font-bold text-slate-800">Sreya Merin</h2>
+                                <p id="profile-role" class="text-slate-500">B.Tech Computer Science • 3rd Year</p>
+                            </div>
+
+                            <div id="profile-stats"
+                                class="grid grid-cols-3 gap-4 mt-8 py-6 border-t border-b border-slate-100">
+                                <div class="text-center">
+                                    <div class="font-bold text-slate-800">104-A</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider">Room</div>
+                                </div>
+                                <div class="text-center border-x border-slate-100">
+                                    <div class="font-bold text-slate-800">C-Block</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider">Hostel</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="font-bold text-green-500">Active</div>
+                                    <div class="text-slate-400 text-xs uppercase tracking-wider">Status</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-address-card text-blue-500"></i> Personal Information
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Email Address</label>
+                                    <p id="profile-email" class="text-slate-700 font-medium">sreya.merin@example.com</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Phone Number</label>
+                                    <p id="profile-phone" class="text-slate-700 font-medium">+91 98765 43210</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Registration ID</label>
+                                    <p id="profile-reg" class="text-slate-700 font-medium">2026011</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-blue-500"></i> Emergency Contact
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Guardian Name</label>
+                                    <p class="text-slate-700 font-medium">Abraham Thomas</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Relationship</label>
+                                    <p class="text-slate-700 font-medium">Father</p>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-400 uppercase font-bold">Emergency Phone</label>
+                                    <p class="text-slate-700 font-medium">+91 94470 12345</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -604,7 +869,7 @@
         // Sidebar Toggle for Mobile
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
-        
+
         function toggleSidebar() {
             if (window.innerWidth < 768) { // Only toggle on mobile
                 const isClosed = sidebar.classList.contains('-translate-x-full');
@@ -618,13 +883,64 @@
             }
         }
 
+        // Add this inside your DOMContentLoaded or script block in index.html
+        function loadNotifications() {
+            const list = document.getElementById('notification-list');
+            const user = JSON.parse(localStorage.getItem('hms_user')) || { role: 'student' };
+
+            let notifs = [
+                { title: 'Fee Reminder', msg: 'Your mess bill for Jan 2026 is due.', type: 'danger', icon: 'fa-circle-exclamation', color: 'red' },
+                { title: 'Room Change', msg: 'Request #442 status updated to: In Progress.', type: 'info', icon: 'fa-clock', color: 'blue' }
+            ];
+
+            list.innerHTML = notifs.map(n => `
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 border-l-4 border-l-${n.color}-500 flex gap-4 hover:shadow-md transition-shadow">
+            <div class="w-10 h-10 rounded-full bg-${n.color}-100 text-${n.color}-600 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid ${n.icon}"></i>
+            </div>
+            <div class="flex-1">
+                <h4 class="font-bold text-slate-800 text-sm">${n.title}</h4>
+                <p class="text-sm text-slate-500 mt-1">${n.msg}</p>
+            </div>
+        </div>
+    `).join('');
+        }
+
+        function loadProfileData() {
+            const user = JSON.parse(localStorage.getItem('hms_user'));
+            if (!user) return;
+
+            // Update Profile UI with data from LocalStorage
+            document.getElementById('profile-name-large').textContent = user.name || "Sreya Merin";
+            document.getElementById('profile-email').textContent = user.email || "sreya@example.com";
+            document.getElementById('profile-reg').textContent = user.id_no || user.id || "2026011";
+
+            // Update Avatar Initials
+            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : "SM";
+            document.getElementById('profile-avatar-large').textContent = initials;
+
+            // You can add logic here to update stats like room/hostel if they exist in your user object
+        }
+
+        // Update your existing showSection logic to call this
+        const originalShowSection = showSection;
+        showSection = function (sectionId, btnElement) {
+            originalShowSection(sectionId, btnElement);
+            if (sectionId === 'profile') {
+                loadProfileData();
+            }
+            if (sectionId === 'notifications') {
+                loadNotifications(); // Your working function
+            }
+        }
+
         // Section Navigation
         function showSection(sectionId, btnElement) {
             // Hide all sections
             document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
             // Show target section
             document.getElementById(sectionId).classList.remove('hidden');
-            
+
             // Reset all nav buttons
             document.querySelectorAll('.nav-item').forEach(el => {
                 el.classList.remove('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
@@ -632,7 +948,7 @@
             });
 
             // Activate clicked button
-            if(btnElement) {
+            if (btnElement) {
                 btnElement.classList.remove('text-slate-300');
                 btnElement.classList.add('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
             }
@@ -643,6 +959,17 @@
                 overlay.classList.add('hidden');
             }
         }
+
+        function logoutUser() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear session
+                localStorage.removeItem('hms_user');
+                // Redirect to login page
+                window.location.href = 'login.html';
+            }
+        }
+
     </script>
 </body>
+
 </html>
