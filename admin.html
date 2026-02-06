@@ -182,6 +182,30 @@
                     <p class="text-slate-500 mt-1">Welcome back, here's what's happening today.</p>
                 </header>
 
+                <!-- NEW: SESSION CLOSURE NOTICE CARD -->
+                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg mb-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                    
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn"></i> End of Session Notice
+                        </h3>
+                        <p class="text-red-100 text-sm mt-1 max-w-lg">
+                            Set the last operational day for the current academic year. This will broadcast a mandatory vacation notice to all Students and Wardens.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm border border-white/20 flex flex-col sm:flex-row gap-3 items-end relative z-10 w-full md:w-auto">
+                        <div class="w-full">
+                            <label class="text-xs font-bold text-red-100 uppercase block mb-1">Last Operational Day</label>
+                            <input type="date" id="closureDateInput" class="w-full bg-white text-slate-800 px-3 py-2 rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-red-300">
+                        </div>
+                        <button onclick="broadcastClosure()" class="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-red-50 transition whitespace-nowrap">
+                            Publish Notice
+                        </button>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="stat-card">
                         <span class="stat-card-title">Total Applications</span>
@@ -339,24 +363,15 @@
                         <div class="card">
                             <h3 class="font-semibold mb-2 text-lg text-slate-800">Priority Algorithm</h3>
                             <p class="text-sm text-slate-500 mb-4 bg-slate-50 p-3 rounded border border-slate-100 font-mono text-xs">
-                                Score = Distance×D + Year×Y + Merit×M + Bonus
+                                Score = (Distance × W_d) + (Rank/Merit × W_m)
                             </p>
 
                             <div class="space-y-4">
                                 <div>
-                                    <label class="text-xs font-bold text-slate-400 uppercase">Core Weights</label>
-                                    <div class="grid grid-cols-3 gap-2 mt-1">
-                                        <input class="input mb-0" placeholder="Dist (D)">
-                                        <input class="input mb-0" placeholder="Year (Y)">
-                                        <input class="input mb-0" placeholder="Merit (M)">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label class="text-xs font-bold text-slate-400 uppercase">Special Bonuses (Add to Score)</label>
-                                    <div class="grid grid-cols-2 gap-2 mt-1">
-                                        <input class="input mb-0" placeholder="Military Bonus">
-                                        <input class="input mb-0" placeholder="Disability Bonus">
+                                    <label class="text-xs font-bold text-slate-400 uppercase">Calculation Weights</label>
+                                    <div class="grid grid-cols-2 gap-4 mt-1">
+                                        <input class="input mb-0" placeholder="Distance Weight (W_d)">
+                                        <input class="input mb-0" placeholder="Rank/Merit Weight (W_m)">
                                     </div>
                                 </div>
                             </div>
@@ -745,7 +760,24 @@
         
         // Student Registry Init
         renderStudentRegistry(studentDatabase);
+
+        // Closure Date Init
+        const existingDate = localStorage.getItem('hms_closure_date');
+        if(existingDate) {
+            document.getElementById('closureDateInput').value = existingDate;
+        }
     };
+
+    // --- CLOSURE LOGIC (NEW) ---
+    function broadcastClosure() {
+        const date = document.getElementById('closureDateInput').value;
+        if(!date) {
+            alert("Please select a valid date.");
+            return;
+        }
+        localStorage.setItem('hms_closure_date', date);
+        alert(`Notice Published!\n\nHostel closing date set to: ${date}\nAlerts sent to all Students and Wardens.`);
+    }
 
     // --- STUDENT REGISTRY LOGIC ---
     function toggleRegistry() {
@@ -1056,7 +1088,8 @@
             // Interaction Logic
             if(isLayoutEditing) {
                 div.onclick = () => toggleCellType(index);
-                // In "Grid Making" mode, we leave the innerHTML empty (no text inside box)
+                // Clean look: No text inside when editing layout
+                div.innerHTML = '';
                 div.title = `Room ${room.id}`; // Tooltip for reference
             } else {
                 div.onclick = () => openRoomModal(index);
@@ -1073,7 +1106,6 @@
                     <span class="room-stats"><i class="fa-solid fa-user-group text-xs"></i> ${room.current}/${room.max}</span>
                 `;
             }
-            
             container.appendChild(div);
         });
     }
