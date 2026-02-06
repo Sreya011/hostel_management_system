@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warden Portal | Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl">
+            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-user-shield text-white text-sm"></i>
+                </div>
+                <h1 class="font-bold text-lg tracking-wide">HMS Warden</h1>
+            </div>
+
+            <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+                <button onclick="showSection('dashboard', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg bg-indigo-600/10 text-indigo-400 border-r-4 border-indigo-500 flex items-center gap-3">
+                    <i class="fa-solid fa-chart-line w-5"></i> Dashboard
+                </button>
+                <button onclick="showSection('students', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-3">
+                    <i class="fa-solid fa-users w-5"></i> Students List
+                </button>
+                <button onclick="showSection('complaints', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-3">
+                    <i class="fa-solid fa-triangle-exclamation w-5"></i> Complaints
+                </button>
+                <button onclick="showSection('allocation', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-3">
+                    <i class="fa-solid fa-bed w-5"></i> Room Allocation
+                </button>
+                <button onclick="showSection('attendance', this)" class="nav-item w-full text-left px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 transition flex items-center gap-3">
+                    <i class="fa-solid fa-calendar-check w-5"></i> Attendance
+                </button>
+            </nav>
+            
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-bold shadow-lg">W</div>
+                    <div class="overflow-hidden">
+                        <p id="wardenNameDisplay" class="font-medium text-sm truncate">Warden Name</p>
+                        <p class="text-xs text-slate-400">Administrator</p>
+                    </div>
+                    <button onclick="logoutUser()" class="ml-auto text-slate-400 hover:text-red-400"><i class="fa-solid fa-right-from-bracket"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-y-auto p-8">
+            
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="section fade-in">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Warden Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-slate-500 text-sm font-medium">Total Residents</p>
+                        <h3 class="text-3xl font-bold text-slate-800">124</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-slate-500 text-sm font-medium">Open Complaints</p>
+                        <h3 class="text-3xl font-bold text-red-500">05</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <p class="text-slate-500 text-sm font-medium">Vacant Beds</p>
+                        <h3 class="text-3xl font-bold text-green-500">12</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STUDENTS LIST -->
+            <div id="students" class="section hidden fade-in">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Registered Students</h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Student ID</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Name</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Room</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-6 py-4 font-medium">2026011</td>
+                                <td class="px-6 py-4">Sreya Merin</td>
+                                <td class="px-6 py-4">304-A</td>
+                                <td class="px-6 py-4"><span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">Active</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- COMPLAINTS -->
+            <div id="complaints" class="section hidden fade-in">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Maintenance Requests</h2>
+                <div class="space-y-4">
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-800 text-sm">Leaking Tap - Room 204</p>
+                            <p class="text-xs text-slate-500">Reported by Sreya Merin • 2 hours ago</p>
+                        </div>
+                        <button class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700">Resolve</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALLOCATION -->
+            <div id="allocation" class="section hidden fade-in">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Room Allocation</h2>
+                <div class="bg-indigo-50 border border-indigo-100 p-6 rounded-xl flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-indigo-900">Pending Requests</p>
+                        <p class="text-sm text-indigo-700">3 students are waiting for room assignments.</p>
+                    </div>
+                    <button class="bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-bold shadow-md">Review Applications</button>
+                </div>
+            </div>
+
+            <!-- ATTENDANCE -->
+            <div id="attendance" class="section hidden fade-in">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Night Attendance</h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <p class="text-slate-500 text-sm mb-4">Daily roll call record for Feb 06, 2026</p>
+                    <button class="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-bold">Mark Attendance</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in and is a Warden
+        const user = JSON.parse(localStorage.getItem("hms_user"));
+        if (!user || user.role !== 'Warden') {
+            window.location.href = "login.html";
+        } else {
+            document.getElementById("wardenNameDisplay").textContent = user.name;
+        }
+
+        function showSection(id, btn) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(b => {
+                b.classList.remove('bg-indigo-600/10', 'text-indigo-400', 'border-r-4', 'border-indigo-500');
+                b.classList.add('text-slate-300');
+            });
+            btn.classList.remove('text-slate-300');
+            btn.classList.add('bg-indigo-600/10', 'text-indigo-400', 'border-r-4', 'border-indigo-500');
+        }
+
+        function logoutUser() {
+            localStorage.removeItem("hms_user");
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
