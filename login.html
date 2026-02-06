@@ -133,8 +133,14 @@
                     const { password, ...safeUser } = user;
                     localStorage.setItem('hms_user', JSON.stringify(safeUser));
 
-                    // Redirect to dashboard (index.html)
-                    window.location.href = 'index.html';
+                    // REDIRECTION LOGIC BASED ON ROLE
+                    if (user.role === 'Warden') {
+                        window.location.href = 'warden.html';
+                    } else if (user.role === 'Admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'student_portal.html';
+                    }
                 } else {
                     // Error
                     loader.style.display = 'none';
