@@ -922,43 +922,39 @@
             // You can add logic here to update stats like room/hostel if they exist in your user object
         }
 
-        // Update your existing showSection logic to call this
-        const originalShowSection = showSection;
-        showSection = function (sectionId, btnElement) {
-            originalShowSection(sectionId, btnElement);
-            if (sectionId === 'profile') {
-                loadProfileData();
-            }
-            if (sectionId === 'notifications') {
-                loadNotifications(); // Your working function
-            }
-        }
+    
 
         // Section Navigation
         function showSection(sectionId, btnElement) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
-            // Show target section
-            document.getElementById(sectionId).classList.remove('hidden');
+    // Hide all sections
+    document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
 
-            // Reset all nav buttons
-            document.querySelectorAll('.nav-item').forEach(el => {
-                el.classList.remove('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
-                el.classList.add('text-slate-300');
-            });
+    // Show selected section
+    const target = document.getElementById(sectionId);
+    if (target) target.classList.remove('hidden');
 
-            // Activate clicked button
-            if (btnElement) {
-                btnElement.classList.remove('text-slate-300');
-                btnElement.classList.add('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
-            }
+    // Reset nav buttons
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
+        el.classList.add('text-slate-300');
+    });
 
-            // Close sidebar on mobile after selection
-            if (window.innerWidth < 768) {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
+    // Activate clicked button
+    if (btnElement) {
+        btnElement.classList.remove('text-slate-300');
+        btnElement.classList.add('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
+    }
+
+    // Load section-specific data
+    if (sectionId === 'profile') loadProfileData();
+    if (sectionId === 'notifications') loadNotifications();
+
+    // Close sidebar on mobile
+    if (window.innerWidth < 768) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+}
 
         function logoutUser() {
             if (confirm('Are you sure you want to logout?')) {
