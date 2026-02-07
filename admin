@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#1e293b' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .nav-item { padding: 12px 16px; border-radius: 8px; display: flex; gap: 12px; color: #94a3b8; transition: all 0.2s; text-align: left; width: 100%; align-items: center; font-size: 0.95rem; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #f8fafc; }
+        .nav-item.active { background: #fee2e2; color: #dc2626; }
+        
+        .menu-title { padding: 0 16px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #475569; text-transform: uppercase; margin-top: 24px; margin-bottom: 8px; }
+        
+        .card { background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: box-shadow 0.2s; }
+        .card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05); }
+
+        .stat-card { background: #fff; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .stat-card-title { color: #64748b; font-size: 0.875rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.025em; }
+        .stat-card-value { font-size: 2rem; font-weight: 700; color: #0f172a; margin-top: 4px; }
+
+        .input { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 0.75rem; outline: none; transition: all 0.2s; background: #f8fafc; font-size: 0.9rem; }
+        .input:focus { border-color: #dc2626; background: #fff; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
+        .input:disabled { background: #f1f5f9; color: #94a3b8; }
+
+        .btn { background: #dc2626; color: #fff; padding: 10px 20px; border-radius: 8px; font-weight: 600; transition: all 0.2s; border: none; cursor: pointer; display: inline-flex; items-center; justify-content: center; gap: 8px; font-size: 0.9rem; }
+        .btn:hover { background: #b91c1c; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        
+        .btn-outline { border: 1px solid #e2e8f0; color: #64748b; background: white; padding: 9px 16px; border-radius: 8px; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-outline:hover { border-color: #dc2626; color: #dc2626; background: #fef2f2; }
+        
+        /* Room Grid Styles */
+        .room-grid { display: grid; gap: 16px; margin-top: 24px; perspective: 1000px; }
+        .room-box {
+            height: 90px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            user-select: none;
+        }
+        .room-box:hover { transform: translateY(-4px); z-index: 10; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15); }
+        .room-id { font-weight: 800; font-size: 1.25rem; letter-spacing: -0.02em; }
+        .room-stats { font-size: 0.75rem; font-weight: 600; opacity: 0.9; margin-top: 2px; display: flex; align-items: center; gap: 4px; }
+        
+        /* Status Colors */
+        .status-empty { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .status-partial { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+        .status-full { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        
+        /* Null/Empty Room Style */
+        .room-null {
+            background: #f1f5f9;
+            border: 2px dashed #cbd5e1;
+            box-shadow: none;
+            cursor: default;
+        }
+        .room-null:hover { transform: none; box-shadow: none; }
+        
+        /* Edit Mode Styles */
+        .edit-mode .room-box { animation: pulse 2s infinite; }
+        .edit-mode .room-null { cursor: pointer; background: #fee2e2; border-color: #fca5a5; opacity: 0.5; }
+        .edit-mode .room-null:hover { opacity: 1; border-color: #dc2626; }
+        .edit-mode .room-box:hover { border-color: #fbbf24; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 50; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-content { background: white; padding: 32px; border-radius: 20px; width: 400px; max-width: 90%; transform: scale(0.95); transition: transform 0.2s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        
+        /* Tables */
+        .data-table { width: 100%; text-align: left; margin-top: 1rem; border-collapse: separate; border-spacing: 0 8px; }
+        .data-table th { font-size: 0.75rem; color: #64748b; text-transform: uppercase; font-weight: 700; padding: 0 12px; }
+        .data-table td { background: #f8fafc; padding: 12px; font-size: 0.9rem; font-weight: 500; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
+        .data-table td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; border-left: 1px solid #e2e8f0; }
+        .data-table td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; border-right: 1px solid #e2e8f0; }
+        
+        /* Badges */
+        .badge { padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; display: inline-block; }
+        .badge-purple { background: #f3e8ff; color: #7e22ce; }
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-gray { background: #f1f5f9; color: #64748b; }
+        .badge-green { background: #dcfce7; color: #15803d; }
+        .badge-amber { background: #fef3c7; color: #b45309; }
+    </style>
+</head>
+
+<body class="bg-slate-50 font-sans text-slate-800 antialiased selection:bg-red-100 selection:text-red-900">
+
+<div class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 z-20">
+        <div class="h-20 flex items-center px-6 border-b border-slate-800 gap-3">
+            <div class="w-9 h-9 bg-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-900/50 text-white">
+                <i class="fa-solid fa-shield-halved text-lg"></i>
+            </div>
+            <h1 class="font-bold text-lg text-white tracking-tight">Admin<span class="text-red-500">Portal</span></h1>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <button onclick="showSection('dashboard', this)" class="nav-item active">
+                <i class="fa-solid fa-gauge-high w-6 text-center"></i> Dashboard
+            </button>
+
+            <div class="menu-title">Management</div>
+            <button onclick="showSection('admission', this)" class="nav-item">
+                <i class="fa-solid fa-user-plus w-6 text-center"></i> Admissions
+            </button>
+
+            <button onclick="showSection('rooms', this)" class="nav-item">
+                <i class="fa-solid fa-cubes-stacked w-6 text-center"></i> Room Allocation
+            </button>
+
+            <div class="menu-title">Finance</div>
+            <button onclick="showSection('fees', this)" class="nav-item">
+                <i class="fa-solid fa-file-invoice-dollar w-6 text-center"></i> Fee & Fine
+            </button>
+            <button onclick="showSection('payments', this)" class="nav-item">
+                <i class="fa-solid fa-money-bill-transfer w-6 text-center"></i> Payments
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+            <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer group">
+                <div class="w-10 h-10 bg-slate-700 rounded-full flex items-center justify-center font-bold text-white border-2 border-slate-600 group-hover:border-slate-500">AD</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-semibold text-white truncate">Administrator</p>
+                    <p class="text-xs text-slate-500 truncate">Hostel Warden</p>
+                </div>
+                <button onclick="logoutUser()" class="text-slate-400 hover:text-red-400 transition-colors">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="flex-1 overflow-y-auto relative bg-slate-50/50">
+        <!-- Header for mobile (optional) -->
+        <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 py-4 flex justify-between items-center md:hidden">
+            <h2 class="font-bold text-lg">Admin Panel</h2>
+        </div>
+
+        <div class="p-8 max-w-7xl mx-auto">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="section animate-fade-in">
+                <header class="mb-8">
+                    <h2 class="text-3xl font-bold text-slate-900">Dashboard Overview</h2>
+                    <p class="text-slate-500 mt-1">Welcome back, here's what's happening today.</p>
+                </header>
+
+                <!-- NEW: SESSION CLOSURE NOTICE CARD -->
+                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg mb-8 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+                    
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-bullhorn"></i> End of Session Notice
+                        </h3>
+                        <p class="text-red-100 text-sm mt-1 max-w-lg">
+                            Set the last operational day for the current academic year. This will broadcast a mandatory vacation notice to all Students and Wardens.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/10 p-4 rounded-lg backdrop-blur-sm border border-white/20 flex flex-col sm:flex-row gap-3 items-end relative z-10 w-full md:w-auto">
+                        <div class="w-full">
+                            <label class="text-xs font-bold text-red-100 uppercase block mb-1">Last Operational Day</label>
+                            <input type="date" id="closureDateInput" class="w-full bg-white text-slate-800 px-3 py-2 rounded-lg text-sm font-bold outline-none focus:ring-2 focus:ring-red-300">
+                        </div>
+                        <button onclick="broadcastClosure()" class="bg-white text-red-600 px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:bg-red-50 transition whitespace-nowrap">
+                            Publish Notice
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="stat-card">
+                        <span class="stat-card-title">Total Applications</span>
+                        <div class="stat-card-value">312</div>
+                        <div class="text-xs text-green-600 font-semibold mt-2 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-up"></i> +12% from last week
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-title">Eligible Students</span>
+                        <div class="stat-card-value">278</div>
+                        <div class="text-xs text-slate-400 mt-2">Based on merit score</div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-title">Vacant Rooms</span>
+                        <div class="stat-card-value text-blue-600">48</div>
+                        <div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                            <div class="bg-blue-600 h-full rounded-full" style="width: 45%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-card-title">Pending Dues</span>
+                        <div class="stat-card-value text-red-500">27</div>
+                        <div class="text-xs text-slate-400 mt-2">Action required</div>
+                    </div>
+                </div>
+
+                <div class="card mt-8">
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                        <h3 class="font-bold text-lg text-slate-800">Hostel Configuration</h3>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Hostel ID</label>
+                            <input class="input bg-slate-50 font-mono text-slate-600" value="HSTL-001" disabled>
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Hostel Name</label>
+                            <input class="input" value="Government Boys Hostel">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Location</label>
+                            <input class="input" value="Main Road, City Center">
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button class="btn bg-slate-800 hover:bg-slate-900">Save Configuration</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ADMISSION MANAGEMENT -->
+            <section id="admission" class="section hidden">
+                <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900">Admissions</h2>
+                        <p class="text-slate-500 mt-1">Manage deadlines, detailed priority logic, and student registry.</p>
+                    </div>
+                    <button onclick="toggleRegistry()" class="btn-outline bg-white shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-address-book text-blue-500"></i> Student Registry
+                    </button>
+                </header>
+
+                <!-- Hidden Registry Panel -->
+                <div id="registrySection" class="hidden mb-8 animate-fade-in">
+                    <div class="card border-l-4 border-l-blue-500">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-lg text-slate-800">Student Database</h3>
+                            <button onclick="toggleRegistry()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-times"></i> Close</button>
+                        </div>
+                        
+                        <div class="mb-4 relative">
+                            <i class="fa-solid fa-search absolute left-4 top-3.5 text-slate-400"></i>
+                            <input id="registrySearch" onkeyup="filterRegistry()" class="input pl-10 mb-0 bg-white" placeholder="Search by ID, Name or Category...">
+                        </div>
+
+                        <div class="overflow-x-auto max-h-96 overflow-y-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Name</th>
+                                        <th>Guardian</th>
+                                        <th>Phone</th>
+                                        <th>Distance</th>
+                                        <th>Category</th>
+                                        <th>Special Case</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="registryBody">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Column 1 -->
+                    <div class="space-y-6">
+                        <!-- DEADLINE -->
+                        <div class="card">
+                            <h3 class="font-semibold mb-3 text-lg text-slate-800">Application Cycle</h3>
+                            <label class="text-sm text-slate-500 block mb-2">Deadline</label>
+                            <input type="datetime-local" class="input">
+                            <div class="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-100">
+                                <i class="fa-solid fa-triangle-exclamation mr-2"></i> Closing the cycle will auto-reject pending applications.
+                            </div>
+                        </div>
+
+                        <!-- SEAT RESERVATION -->
+                        <div class="card bg-slate-50 border border-slate-200">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h3 class="font-semibold text-lg text-slate-800">Seat Reservation Matrix</h3>
+                                    <p class="text-xs text-slate-500">Define quota percentages for admission</p>
+                                </div>
+                                <span class="bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded font-bold">Policy</span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="text-xs font-bold text-slate-500 uppercase">Total Intake Capacity</label>
+                                <input type="number" value="100" class="input mb-0 bg-white" placeholder="Total Seats">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <div>
+                                    <label class="text-xs text-slate-500 block mb-1">SC Quota (%)</label>
+                                    <input type="number" placeholder="15" class="input mb-0 bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 block mb-1">ST Quota (%)</label>
+                                    <input type="number" placeholder="7.5" class="input mb-0 bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 block mb-1">OBC Quota (%)</label>
+                                    <input type="number" placeholder="27" class="input mb-0 bg-white">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-slate-500 block mb-1">Management (%)</label>
+                                    <input type="number" placeholder="5" class="input mb-0 bg-white">
+                                </div>
+                            </div>
+                            
+                            <div class="p-3 bg-white rounded border border-slate-200 flex justify-between items-center text-sm">
+                                <span class="font-medium text-slate-600">General / Open Merit</span>
+                                <span class="font-bold text-slate-800">45.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Column 2: Detailed Algorithm & Management -->
+                    <div class="space-y-6">
+                        <!-- PRIORITY ALGORITHM (UPDATED) -->
+                        <div class="card">
+                            <h3 class="font-semibold mb-2 text-lg text-slate-800">Priority Algorithm</h3>
+                            
+                            <!-- Logic Description -->
+                            <div class="bg-slate-50 p-3 rounded border border-slate-100 mb-4 text-xs font-mono text-slate-600 space-y-1">
+                                <p><strong>1st Year:</strong> Score = (Dist × Wd) + (Inv. Rank × Wr) [Desc]</p>
+                                <p><strong>Seniors:</strong> Score = (Dist × Wd) + (CGPA × Wc) [Asc]</p>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Common Weight -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 uppercase">Common Factor</label>
+                                    <div class="mt-1">
+                                        <input class="input mb-0" placeholder="Distance Weight (Wd)">
+                                    </div>
+                                </div>
+
+                                <!-- Split Academic Weights -->
+                                <div>
+                                    <label class="text-xs font-bold text-slate-400 uppercase">Academic Factors</label>
+                                    <div class="grid grid-cols-2 gap-4 mt-1">
+                                        <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                                            <input class="input mb-1 bg-white" placeholder="Rank Weight (Wr)">
+                                            <span class="text-[10px] font-bold text-indigo-600 block">First Year (Rank)</span>
+                                            <span class="text-[10px] text-slate-400">Lower Rank = Higher Priority</span>
+                                        </div>
+                                        <div class="bg-slate-50 p-2 rounded border border-slate-100">
+                                            <input class="input mb-1 bg-white" placeholder="CGPA Weight (Wc)">
+                                            <span class="text-[10px] font-bold text-green-600 block">Seniors (CGPA)</span>
+                                            <span class="text-[10px] text-slate-400">Higher CGPA = Higher Priority</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn w-full mt-6 bg-slate-800 hover:bg-slate-900">Generate Selection List</button>
+                        </div>
+
+                        <!-- Management Quota Approval -->
+                        <div class="card">
+                            <h3 class="font-semibold mb-3 text-lg text-slate-800">Management Reservation</h3>
+                            <div class="flex gap-2">
+                                <input class="input mb-0" placeholder="Application ID">
+                                <button class="btn whitespace-nowrap">Approve Admission</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ROOM ALLOCATION -->
+            <section id="rooms" class="section hidden">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900">Room Allocation</h2>
+                        <p class="text-slate-500 mt-1">Manage floor plans, occupancy, and AC types.</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="addFloor()" class="btn-outline bg-white shadow-sm"><i class="fa-solid fa-layer-group mr-2"></i> Add Floor</button>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="card bg-white border-0 shadow-lg ring-1 ring-slate-900/5 mb-8">
+                    <div class="flex flex-col lg:flex-row gap-8 items-end">
+                        
+                        <!-- Floor Selector -->
+                        <div class="w-full lg:w-1/3">
+                            <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Current Floor</label>
+                            <div class="flex gap-2">
+                                <div class="relative flex-1">
+                                    <select id="floorSelect" onchange="switchFloor()" class="input mb-0 appearance-none cursor-pointer font-bold text-slate-700"></select>
+                                    <i class="fa-solid fa-chevron-down absolute right-4 top-3.5 text-slate-400 pointer-events-none"></i>
+                                </div>
+                                <button onclick="deleteCurrentFloor()" class="p-3 bg-slate-100 text-slate-500 rounded-lg hover:bg-red-50 hover:text-red-600 transition-colors" title="Delete Floor">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Grid Settings -->
+                        <div class="w-full lg:w-2/3 flex flex-col md:flex-row gap-6 border-t lg:border-t-0 lg:border-l border-slate-100 pt-6 lg:pt-0 lg:pl-8">
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-2 block">Grid Dimensions</label>
+                                <div class="flex gap-2">
+                                    <input id="matrixRows" type="number" min="1" placeholder="Rows" class="input mb-0 text-center">
+                                    <span class="self-center text-slate-300">✕</span>
+                                    <input id="matrixCols" type="number" min="1" placeholder="Cols" class="input mb-0 text-center">
+                                    <button onclick="generateLayout()" class="btn-outline whitespace-nowrap bg-slate-50">Reset Grid</button>
+                                </div>
+                            </div>
+                            
+                            <!-- EDIT LAYOUT TOGGLE -->
+                            <div class="flex flex-col justify-end pb-1">
+                                <label class="flex items-center gap-3 cursor-pointer group p-2 border border-slate-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                                    <div class="relative">
+                                        <input type="checkbox" id="layoutEditToggle" class="sr-only peer" onchange="toggleLayoutMode()">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </div>
+                                    <div>
+                                        <span class="text-sm font-bold text-slate-700 block">Edit Layout</span>
+                                        <span class="text-xs text-slate-500">Toggle "null" spaces</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legend & Tips -->
+                <div class="flex flex-wrap justify-between items-center mb-4 px-2">
+                    <div class="flex gap-6 text-sm font-medium text-slate-600">
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full status-empty"></div> Vacant</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full status-partial"></div> Partial</div>
+                        <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full status-full"></div> Full</div>
+                        <div class="flex items-center gap-2"><i class="fa-regular fa-snowflake text-blue-300"></i> AC Room</div>
+                        <div class="flex items-center gap-2 opacity-50"><div class="w-3 h-3 rounded-sm border border-slate-400 bg-slate-100"></div> Empty Space</div>
+                    </div>
+                    <div id="editTip" class="text-xs text-blue-600 bg-blue-50 px-3 py-1 rounded-full font-bold hidden animate-pulse">
+                        <i class="fa-solid fa-info-circle mr-1"></i> Click any room to remove it (create gap)
+                    </div>
+                </div>
+
+                <!-- Room Grid Visualization -->
+                <div id="roomContainer" class="room-grid">
+                    <!-- Rooms injected via JS -->
+                </div>
+            </section>
+
+            <!-- FEES & FINANCE -->
+            <section id="fees" class="section hidden">
+                <header class="mb-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-3xl font-bold text-slate-900">Financials</h2>
+                        <p class="text-slate-500 mt-1">Manage global fee structures and student-specific overrides.</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-slate-500">Total Students</p>
+                        <p class="text-2xl font-bold text-slate-800" id="totalStudentCount">305</p>
+                    </div>
+                </header>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left: Global Defaults -->
+                    <div class="card h-fit">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-earth-americas text-blue-500"></i> Standard Fee Structure
+                        </h3>
+                        <p class="text-sm text-slate-400 mb-6">Applies to all students unless an override exists.</p>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-medium text-slate-600 mb-1 block">Annual Hostel Fee</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input id="globalHostelFee" type="number" class="input pl-8 mb-0 font-bold" value="50000" onchange="calculateRevenue()">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-slate-600 mb-1 block">Monthly Mess Fee</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input id="globalMessFee" type="number" class="input pl-8 mb-0 font-bold" value="4000" onchange="calculateRevenue()">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-slate-600 mb-1 block">Late Payment Fine (per day)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-2.5 text-slate-400">₹</span>
+                                    <input id="globalFine" type="number" class="input pl-8 mb-0" value="50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Special Cases / Overrides -->
+                    <div class="card h-fit">
+                        <h3 class="font-bold text-lg mb-4 text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-user-tag text-purple-500"></i> Special Fee Overrides
+                        </h3>
+                        <p class="text-sm text-slate-400 mb-4">Set specific fees for scholarships or premium rooms.</p>
+                        
+                        <!-- Add Override Form -->
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                                <input id="overrideId" placeholder="Student ID" class="input mb-0 bg-white">
+                                <input id="overrideHostel" type="number" placeholder="Hostel Fee" class="input mb-0 bg-white">
+                                <input id="overrideMess" type="number" placeholder="Mess Fee" class="input mb-0 bg-white">
+                            </div>
+                            <button onclick="addOverride()" class="btn w-full py-2 text-sm"><i class="fa-solid fa-plus"></i> Add Exception</button>
+                        </div>
+
+                        <!-- Override List -->
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Hostel</th>
+                                        <th>Mess</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="overrideListBody">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                            <div id="noOverridesMsg" class="text-center py-4 text-slate-400 text-sm italic">No special cases active.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAYMENTS & HISTORY -->
+            <section id="payments" class="section hidden">
+                <header class="mb-8 flex justify-between items-center">
+                    <h2 class="text-3xl font-bold text-slate-900">Payment Records</h2>
+                    <button onclick="toggleHistory()" class="btn-outline bg-white shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i> View Transaction History
+                    </button>
+                </header>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card bg-slate-900 text-white border-none relative overflow-hidden">
+                        <!-- Decorative element -->
+                        <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+                        
+                        <p class="text-slate-400 font-medium z-10 relative">Total Revenue Expected</p>
+                        <p class="text-4xl font-bold mt-2 z-10 relative" id="totalRevenueDisplay">₹0</p>
+                        
+                        <div class="mt-6 pt-4 border-t border-slate-800 grid grid-cols-2 gap-4 text-sm z-10 relative">
+                            <div>
+                                <span class="text-slate-500 block text-xs uppercase">Standard</span>
+                                <span class="font-mono text-slate-300" id="standardRevDisplay">₹0</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500 block text-xs uppercase">Exceptions</span>
+                                <span class="font-mono text-purple-300" id="specialRevDisplay">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card border-red-100 bg-red-50">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-red-600 font-medium">Pending Dues</p>
+                                <p class="text-4xl font-bold text-red-700 mt-2">27 Students</p>
+                            </div>
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-red-400 mt-4 mb-4">27 students have not cleared their dues matching their specific fee profile.</p>
+                        <button class="btn-outline w-full border-red-200 text-red-600 hover:bg-red-100 hover:border-red-300 bg-white">Send Targeted Reminders</button>
+                    </div>
+                </div>
+
+                <!-- HIDDEN TRANSACTION HISTORY PANEL -->
+                <div id="historySection" class="hidden mt-8 border-t border-slate-200 pt-8 animate-fade-in">
+                    <div class="card">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-lg text-slate-800">Search Transactions</h3>
+                            <button onclick="toggleHistory()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-times"></i> Close</button>
+                        </div>
+
+                        <!-- Search Filters -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <div class="md:col-span-1">
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">ID Search</label>
+                                <input id="searchId" class="input mb-0 bg-white" placeholder="Payment or Student ID">
+                            </div>
+                            <div class="md:col-span-1">
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">From Date</label>
+                                <input id="searchDateFrom" type="date" class="input mb-0 bg-white">
+                            </div>
+                            <div class="md:col-span-1">
+                                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">To Date</label>
+                                <input id="searchDateTo" type="date" class="input mb-0 bg-white">
+                            </div>
+                            <div class="md:col-span-1 flex items-end">
+                                <button onclick="searchTransactions()" class="btn w-full mb-[1px]">
+                                    <i class="fa-solid fa-magnifying-glass"></i> Search Records
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Results Table -->
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Student ID</th>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionListBody">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                            <div id="noTransactionsMsg" class="text-center py-8 text-slate-400 text-sm hidden">
+                                <i class="fa-solid fa-file-invoice fa-2x mb-2 opacity-50 block"></i>
+                                No matching records found.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<!-- ROOM EDIT MODAL (With AC option) -->
+<div id="roomModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-xl text-slate-800">Room Details</h3>
+            <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-red-100 hover:text-red-600 flex items-center justify-center transition-colors"><i class="fa-solid fa-times"></i></button>
+        </div>
+        
+        <input type="hidden" id="editRoomIndex">
+        
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Room Number/ID</label>
+                <input id="editRoomId" type="text" class="input font-bold text-lg">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Max Capacity</label>
+                    <input id="editRoomMax" type="number" class="input">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Occupants</label>
+                    <input id="editRoomCurrent" type="number" class="input">
+                </div>
+            </div>
+
+            <div>
+                <label class="text-xs font-bold text-slate-500 uppercase mb-1 block">Room Type</label>
+                <select id="editRoomType" class="input cursor-pointer">
+                    <option value="Non-AC">Non-AC</option>
+                    <option value="AC">AC (Air Conditioned)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="flex gap-3 mt-8">
+            <button onclick="saveRoomDetails()" class="btn w-full">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GLOBAL DATA STATE ---
+    let hostelData = {
+        floors: [
+            {
+                id: 1,
+                name: "Ground Floor",
+                rows: 3,
+                cols: 4,
+                rooms: [] 
+            }
+        ]
+    };
+    
+    // --- FINANCIAL & STUDENT DATA STATE ---
+    const TOTAL_STUDENTS = 305;
+    
+    // MOCK STUDENT DATABASE
+    const studentDatabase = [
+        { id: "STU-001", name: "Rahul Sharma", guardian: "Amit Sharma", phone: "9876543210", distance: "250 km", category: "General", special: "None" },
+        { id: "STU-002", name: "Priya Singh", guardian: "Raj Singh", phone: "9876543211", distance: "50 km", category: "SC", special: "Scholarship" },
+        { id: "STU-003", name: "Ahmed Khan", guardian: "Zafar Khan", phone: "9876543212", distance: "500 km", category: "General", special: "PWD" },
+        { id: "STU-004", name: "John Doe", guardian: "Mary Doe", phone: "9876543213", distance: "1200 km", category: "General", special: "None" },
+        { id: "STU-005", name: "Sneha Patel", guardian: "Vikram Patel", phone: "9876543214", distance: "30 km", category: "OBC", special: "None" }
+    ];
+
+    // Transaction Mock Data
+    const mockTransactions = [
+        { id: "TXN-8879", student: "STU-105", date: "2023-10-01", type: "Hostel Fee", amount: 25000, status: "Success" },
+        { id: "TXN-8880", student: "STU-001", date: "2023-10-02", type: "Mess Fee", amount: 2000, status: "Success" },
+        { id: "TXN-8881", student: "STU-099", date: "2023-10-02", type: "Fine", amount: 500, status: "Pending" },
+        { id: "TXN-8882", student: "STU-105", date: "2023-10-05", type: "Mess Fee", amount: 4000, status: "Success" },
+        { id: "TXN-8883", student: "PREM-102", date: "2023-10-10", type: "Hostel Fee", amount: 75000, status: "Success" }
+    ];
+
+    // Fee Overrides
+    let feeOverrides = {
+        "SCH-001": { hostel: 0, mess: 2000 },
+        "PREM-102": { hostel: 75000, mess: 6000 }
+    };
+
+    let currentFloorIndex = 0;
+    let isLayoutEditing = false;
+
+    // --- INITIALIZATION ---
+    window.onload = function() {
+        // Room Init
+        if(hostelData.floors[0].rooms.length === 0) {
+            generateDefaultRooms(0, 3, 4);
+             const f = hostelData.floors[0];
+             f.rooms[3] = null;
+             f.rooms[7] = null;
+        }
+        renderFloorSelect();
+        renderRoomGrid();
+        
+        // Finance Init
+        renderOverrides();
+        calculateRevenue();
+        
+        // Student Registry Init
+        renderStudentRegistry(studentDatabase);
+
+        // Closure Date Init
+        const existingDate = localStorage.getItem('hms_closure_date');
+        if(existingDate) {
+            document.getElementById('closureDateInput').value = existingDate;
+        }
+    };
+
+    // --- CLOSURE LOGIC (NEW) ---
+    function broadcastClosure() {
+        const date = document.getElementById('closureDateInput').value;
+        if(!date) {
+            alert("Please select a valid date.");
+            return;
+        }
+        localStorage.setItem('hms_closure_date', date);
+        alert(`Notice Published!\n\nHostel closing date set to: ${date}\nAlerts sent to all Students and Wardens.`);
+    }
+
+    // --- STUDENT REGISTRY LOGIC ---
+    function toggleRegistry() {
+        const section = document.getElementById('registrySection');
+        section.classList.toggle('hidden');
+    }
+
+    function filterRegistry() {
+        const query = document.getElementById('registrySearch').value.toLowerCase();
+        const filtered = studentDatabase.filter(s => 
+            s.id.toLowerCase().includes(query) || 
+            s.name.toLowerCase().includes(query) || 
+            s.category.toLowerCase().includes(query)
+        );
+        renderStudentRegistry(filtered);
+    }
+
+    function renderStudentRegistry(data) {
+        const tbody = document.getElementById('registryBody');
+        tbody.innerHTML = '';
+        
+        if(data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-slate-400">No students found.</td></tr>';
+            return;
+        }
+
+        data.forEach(s => {
+            const tr = document.createElement('tr');
+            let badgeClass = 'badge-gray';
+            if(s.special === 'Scholarship') badgeClass = 'badge-blue';
+            if(s.special === 'PWD') badgeClass = 'badge-purple';
+            if(s.special === 'None') badgeClass = 'badge-gray text-slate-400 font-normal';
+            
+            tr.innerHTML = `
+                <td class="font-mono text-slate-600 text-xs">${s.id}</td>
+                <td class="font-bold text-slate-700">${s.name}</td>
+                <td class="text-slate-500">${s.guardian}</td>
+                <td class="text-slate-600 text-xs">${s.phone}</td>
+                <td class="text-slate-600">${s.distance}</td>
+                <td><span class="text-xs font-semibold bg-slate-100 px-2 py-1 rounded text-slate-600">${s.category}</span></td>
+                <td><span class="badge ${badgeClass}">${s.special}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // --- TRANSACTION HISTORY LOGIC ---
+    function toggleHistory() {
+        const panel = document.getElementById('historySection');
+        panel.classList.toggle('hidden');
+        if(!panel.classList.contains('hidden')) {
+            renderTransactions(mockTransactions);
+        }
+    }
+
+    function searchTransactions() {
+        const idQuery = document.getElementById('searchId').value.trim().toUpperCase();
+        const dateFrom = document.getElementById('searchDateFrom').value;
+        const dateTo = document.getElementById('searchDateTo').value;
+
+        const filtered = mockTransactions.filter(txn => {
+            const idMatch = !idQuery || txn.id.includes(idQuery) || txn.student.includes(idQuery);
+            let dateMatch = true;
+            if (dateFrom) dateMatch = dateMatch && (new Date(txn.date) >= new Date(dateFrom));
+            if (dateTo) dateMatch = dateMatch && (new Date(txn.date) <= new Date(dateTo));
+            return idMatch && dateMatch;
+        });
+
+        renderTransactions(filtered);
+    }
+
+    function renderTransactions(data) {
+        const tbody = document.getElementById('transactionListBody');
+        const emptyMsg = document.getElementById('noTransactionsMsg');
+        tbody.innerHTML = '';
+
+        if(data.length === 0) {
+            emptyMsg.classList.remove('hidden');
+        } else {
+            emptyMsg.classList.add('hidden');
+            data.forEach(txn => {
+                const tr = document.createElement('tr');
+                const statusColor = txn.status === "Success" ? "badge-green" : "badge-amber";
+                tr.innerHTML = `
+                    <td class="font-mono text-slate-500 text-xs">${txn.id}</td>
+                    <td class="font-bold text-slate-700">${txn.student}</td>
+                    <td class="text-slate-500">${txn.date}</td>
+                    <td class="text-slate-600">${txn.type}</td>
+                    <td class="font-mono">₹${txn.amount.toLocaleString()}</td>
+                    <td><span class="badge ${statusColor}">${txn.status}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    // --- FINANCIAL LOGIC ---
+    function addOverride() {
+        const id = document.getElementById('overrideId').value.trim();
+        const hostel = parseInt(document.getElementById('overrideHostel').value);
+        const mess = parseInt(document.getElementById('overrideMess').value);
+        
+        if(!id || isNaN(hostel) || isNaN(mess)) {
+            alert("Please enter valid Student ID and Fee amounts.");
+            return;
+        }
+        
+        feeOverrides[id] = { hostel, mess };
+        
+        document.getElementById('overrideId').value = '';
+        document.getElementById('overrideHostel').value = '';
+        document.getElementById('overrideMess').value = '';
+        
+        renderOverrides();
+        calculateRevenue();
+    }
+    
+    function removeOverride(id) {
+        if(confirm(`Remove custom fee structure for ${id}?`)) {
+            delete feeOverrides[id];
+            renderOverrides();
+            calculateRevenue();
+        }
+    }
+    
+    function renderOverrides() {
+        const tbody = document.getElementById('overrideListBody');
+        const emptyMsg = document.getElementById('noOverridesMsg');
+        tbody.innerHTML = '';
+        
+        const keys = Object.keys(feeOverrides);
+        
+        if(keys.length === 0) {
+            emptyMsg.classList.remove('hidden');
+        } else {
+            emptyMsg.classList.add('hidden');
+            keys.forEach(id => {
+                const data = feeOverrides[id];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="font-mono text-slate-600">${id}</td>
+                    <td>₹${data.hostel}</td>
+                    <td>₹${data.mess}</td>
+                    <td class="text-center">
+                        <button onclick="removeOverride('${id}')" class="text-red-400 hover:text-red-600"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    }
+
+    function calculateRevenue() {
+        const globalHostel = parseInt(document.getElementById('globalHostelFee').value) || 0;
+        const globalMess = parseInt(document.getElementById('globalMessFee').value) || 0;
+        
+        let totalRevenue = 0;
+        let specialRevenue = 0;
+        let standardRevenue = 0;
+        
+        Object.values(feeOverrides).forEach(fee => {
+            specialRevenue += (fee.hostel + fee.mess);
+        });
+        
+        const overrideCount = Object.keys(feeOverrides).length;
+        const standardCount = TOTAL_STUDENTS - overrideCount;
+        
+        if (standardCount >= 0) {
+            standardRevenue = standardCount * (globalHostel + globalMess);
+        }
+        
+        totalRevenue = standardRevenue + specialRevenue;
+        
+        document.getElementById('totalRevenueDisplay').innerText = formatCurrency(totalRevenue);
+        document.getElementById('standardRevDisplay').innerText = formatCurrency(standardRevenue);
+        document.getElementById('specialRevDisplay').innerText = formatCurrency(specialRevenue);
+        document.getElementById('totalStudentCount').innerText = TOTAL_STUDENTS;
+    }
+    
+    function formatCurrency(num) {
+        return "₹" + num.toLocaleString('en-IN');
+    }
+
+    // --- NAVIGATION LOGIC ---
+    function showSection(id, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        if(id === 'rooms') renderRoomGrid();
+        if(id === 'fees' || id === 'payments') calculateRevenue();
+    }
+
+    function logoutUser() {
+        if (confirm("Logout admin session?")) location.href = "#";
+    }
+
+    // --- FLOOR MANAGEMENT LOGIC ---
+    function addFloor() {
+        const nextId = hostelData.floors.length + 1;
+        const newFloor = { id: Date.now(), name: `Floor ${nextId}`, rows: 3, cols: 4, rooms: [] };
+        hostelData.floors.push(newFloor);
+        generateDefaultRooms(hostelData.floors.length - 1, 3, 4);
+        currentFloorIndex = hostelData.floors.length - 1;
+        renderFloorSelect();
+        renderRoomGrid();
+    }
+
+    function deleteCurrentFloor() {
+        if(hostelData.floors.length <= 1) { alert("Cannot delete the only floor!"); return; }
+        if(confirm(`Delete ${hostelData.floors[currentFloorIndex].name} and all its data?`)) {
+            hostelData.floors.splice(currentFloorIndex, 1);
+            currentFloorIndex = 0;
+            renderFloorSelect();
+            renderRoomGrid();
+        }
+    }
+
+    function switchFloor() {
+        const select = document.getElementById('floorSelect');
+        currentFloorIndex = parseInt(select.value);
+        renderRoomGrid();
+    }
+
+    function renderFloorSelect() {
+        const select = document.getElementById('floorSelect');
+        select.innerHTML = '';
+        hostelData.floors.forEach((floor, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.text = floor.name;
+            if(index === currentFloorIndex) option.selected = true;
+            select.appendChild(option);
+        });
+    }
+
+    // --- LAYOUT LOGIC ---
+    function toggleLayoutMode() {
+        const toggle = document.getElementById('layoutEditToggle');
+        isLayoutEditing = toggle.checked;
+        const container = document.getElementById('roomContainer');
+        const tip = document.getElementById('editTip');
+        if(isLayoutEditing) {
+            container.classList.add('edit-mode');
+            tip.classList.remove('hidden');
+        } else {
+            container.classList.remove('edit-mode');
+            tip.classList.add('hidden');
+        }
+        renderRoomGrid();
+    }
+
+    function generateDefaultRooms(floorIdx, rows, cols) {
+        const floor = hostelData.floors[floorIdx];
+        floor.rooms = [];
+        let roomCount = 100 * (floorIdx + 1) + 1;
+        for(let i = 0; i < rows * cols; i++) {
+            // Default to Non-AC
+            floor.rooms.push({ id: roomCount++, max: 4, current: 0, type: 'Non-AC' });
+        }
+    }
+
+    function generateLayout() {
+        const rows = parseInt(document.getElementById('matrixRows').value);
+        const cols = parseInt(document.getElementById('matrixCols').value);
+        if(!rows || !cols || rows < 1 || cols < 1) return;
+        if(confirm("Resetting grid will clear all current room data and layout customization. Continue?")) {
+            const floor = hostelData.floors[currentFloorIndex];
+            floor.rows = rows;
+            floor.cols = cols;
+            generateDefaultRooms(currentFloorIndex, rows, cols);
+            renderRoomGrid();
+        }
+    }
+
+    // --- GRID RENDERING ---
+    function renderRoomGrid() {
+        const floor = hostelData.floors[currentFloorIndex];
+        const container = document.getElementById('roomContainer');
+        document.getElementById('matrixRows').value = floor.rows;
+        document.getElementById('matrixCols').value = floor.cols;
+        container.style.gridTemplateColumns = `repeat(${floor.cols}, 1fr)`;
+        container.innerHTML = '';
+
+        floor.rooms.forEach((room, index) => {
+            const div = document.createElement('div');
+            
+            // Handle Null (Empty Space)
+            if (room === null) {
+                div.className = 'room-box room-null';
+                if(isLayoutEditing) {
+                    div.innerHTML = '<i class="fa-solid fa-plus text-slate-400"></i>';
+                    div.onclick = () => toggleCellType(index);
+                }
+                container.appendChild(div);
+                return;
+            }
+
+            // Determine Status Color
+            let statusClass = 'status-empty';
+            if (room.current >= room.max) statusClass = 'status-full';
+            else if (room.current > 0) statusClass = 'status-partial';
+
+            div.className = `room-box ${statusClass} relative`;
+            
+            // Interaction Logic
+            if(isLayoutEditing) {
+                div.onclick = () => toggleCellType(index);
+                // Clean look: No text inside when editing layout
+                div.innerHTML = '';
+                div.title = `Room ${room.id}`; // Tooltip for reference
+            } else {
+                div.onclick = () => openRoomModal(index);
+                
+                // AC Icon Logic (Only shown in View Mode)
+                let acIcon = '';
+                if (room.type === 'AC') {
+                    acIcon = `<div class="absolute top-1 right-2 text-blue-100 text-xs drop-shadow-md" title="AC Room"><i class="fa-regular fa-snowflake"></i></div>`;
+                }
+
+                div.innerHTML = `
+                    ${acIcon}
+                    <span class="room-id">${room.id}</span>
+                    <span class="room-stats"><i class="fa-solid fa-user-group text-xs"></i> ${room.current}/${room.max}</span>
+                `;
+            }
+            container.appendChild(div);
+        });
+    }
+
+    function toggleCellType(index) {
+        const floor = hostelData.floors[currentFloorIndex];
+        if (floor.rooms[index] === null) {
+            let newId = (100 * (currentFloorIndex + 1)) + index + 1;
+            floor.rooms[index] = { id: newId, max: 4, current: 0, type: 'Non-AC' };
+        } else {
+            floor.rooms[index] = null;
+        }
+        renderRoomGrid();
+    }
+
+    // --- MODAL LOGIC ---
+    function openRoomModal(roomIndex) {
+        const floor = hostelData.floors[currentFloorIndex];
+        const room = floor.rooms[roomIndex];
+        if(!room) return;
+
+        document.getElementById('editRoomIndex').value = roomIndex;
+        document.getElementById('editRoomId').value = room.id;
+        document.getElementById('editRoomMax').value = room.max;
+        document.getElementById('editRoomCurrent').value = room.current;
+        document.getElementById('editRoomType').value = room.type || 'Non-AC';
+
+        const modal = document.getElementById('roomModal');
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.add('active'), 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('roomModal');
+        modal.classList.remove('active');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+    }
+
+    function saveRoomDetails() {
+        const index = document.getElementById('editRoomIndex').value;
+        const newId = document.getElementById('editRoomId').value;
+        const newMax = parseInt(document.getElementById('editRoomMax').value);
+        const newCurrent = parseInt(document.getElementById('editRoomCurrent').value);
+        const newType = document.getElementById('editRoomType').value;
+
+        if(newCurrent > newMax) {
+            alert("Current occupancy cannot exceed max capacity!");
+            return;
+        }
+
+        const floor = hostelData.floors[currentFloorIndex];
+        if(floor.rooms[index]) {
+            floor.rooms[index].id = newId;
+            floor.rooms[index].max = newMax;
+            floor.rooms[index].current = newCurrent;
+            floor.rooms[index].type = newType;
+        }
+
+        closeModal();
+        renderRoomGrid();
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('roomModal');
+        if (event.target == modal) closeModal();
+    }
+</script>
+
+</body>
+</html>
