@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 font-sans text-slate-800 antialiased">
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="fixed inset-0 bg-slate-900/80 z-50 hidden flex-col items-center justify-center text-white">
+        <div class="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <div class="text-sm font-medium">Signing in...</div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast"
+        class="fixed top-5 right-5 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg hidden transform transition-all duration-300 translate-y-[-20px] opacity-0 z-50">
+        <i class="fa-solid fa-circle-exclamation mr-2"></i>
+        <span id="error-msg">Error message</span>
+    </div>
+
+    <!-- Success Toast -->
+    <div id="success-toast"
+        class="fixed top-5 right-5 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg hidden transform transition-all duration-300 translate-y-[-20px] opacity-0 z-50">
+        <i class="fa-solid fa-circle-check mr-2"></i>
+        <span id="success-msg">Success</span>
+    </div>
+
+    <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+
+        <!-- Background blobs -->
+        <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+            <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-600/5 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="glass-card w-full max-w-md p-8 rounded-2xl shadow-2xl relative z-10 mx-4">
+
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-hotel text-2xl text-white"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800">Welcome Back</h1>
+                <p class="text-slate-500 text-sm mt-1">Sign in to access your portal</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400"><i class="fa-solid fa-envelope"></i></span>
+                        <input type="email" id="email"
+                            class="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="student@college.edu" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3.5 text-slate-400"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="password"
+                            class="w-full pl-11 pr-11 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="••••••••" required>
+                        <button type="button" onclick="togglePass()"
+                            class="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 transition-colors">
+                            <i id="pass-eye" class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- FIX: hint that password = phone number -->
+                    <p class="text-xs text-slate-400 mt-1.5">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Your password is your registered phone number.
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="remember-me"
+                            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+                        <span class="text-sm text-slate-500 font-medium">Remember me</span>
+                    </label>
+                    <a href="#" class="text-sm font-bold text-blue-600 hover:text-blue-700">Forgot password?</a>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-500/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                    <span>Sign In</span>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </button>
+            </form>
+
+            <!-- Demo Credentials -->
+            <!-- FIX: Updated to match actual sample data inserted into hostel_db -->
+            <div class="mt-8 pt-6 border-t border-slate-100">
+                <p class="text-xs text-slate-400 mb-3 text-center">Demo Credentials (Click to fill):</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="fillLogin('sreya.merin@college.edu', '9876543210')"
+                        class="px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-100 hover:bg-blue-100 transition text-left">
+                        <div class="font-bold">Sreya Merin</div>
+                        <div class="text-blue-400 mt-0.5">Year 3 · CS</div>
+                    </button>
+                    <button onclick="fillLogin('arjun.nair@college.edu', '9876500001')"
+                        class="px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-100 hover:bg-blue-100 transition text-left">
+                        <div class="font-bold">Arjun Nair</div>
+                        <div class="text-blue-400 mt-0.5">Year 2 · Electronics</div>
+                    </button>
+                    <button onclick="fillLogin('priya.krishnan@college.edu', '9876500002')"
+                        class="px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-100 hover:bg-blue-100 transition text-left">
+                        <div class="font-bold">Priya Krishnan</div>
+                        <div class="text-blue-400 mt-0.5">Year 4 · Mechanical</div>
+                    </button>
+                    <button onclick="fillLogin('arun.babu@college.edu', '9876500003')"
+                        class="px-3 py-2 text-xs bg-blue-50 text-blue-700 rounded-lg border border-blue-100 hover:bg-blue-100 transition text-left">
+                        <div class="font-bold">Arun Babu</div>
+                        <div class="text-blue-400 mt-0.5">Year 1 · Civil</div>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ── Login Form Submit ─────────────────────────────────
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const email    = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const loader   = document.getElementById('loading');
+
+            if (!email || !password) {
+                showError('Please enter both email and password.');
+                return;
+            }
+
+            loader.classList.remove('hidden');
+            loader.style.display = 'flex';
+
+            fetch("http://127.0.0.1:5000/login", {
+                method:  "POST",
+                headers: { "Content-Type": "application/json" },
+                body:    JSON.stringify({ email, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                loader.style.display = 'none';
+                loader.classList.add('hidden');
+
+                if (data.success) {
+                    const user = data.user;
+
+                    // FIX: Make sure all fields the portal needs are saved
+                    // Backend now returns: id, name, email, phone_no, room_id, year, department, role
+                    localStorage.setItem('hms_user', JSON.stringify({
+                        id:         user.id,
+                        name:       user.name,
+                        email:      user.email,
+                        phone_no:   user.phone_no,
+                        room_id:    user.room_id   || null,
+                        year:       user.year      || 1,       // used by admission priority score
+                        department: user.department || '',      // shown in profile
+                        role:       user.role      || 'student'
+                    }));
+
+                    // Remember me — store email for next visit
+                    if (document.getElementById('remember-me').checked) {
+                        localStorage.setItem('hms_remember_email', email);
+                    } else {
+                        localStorage.removeItem('hms_remember_email');
+                    }
+
+                    showSuccess(`Welcome back, ${user.name}!`);
+
+                    // FIX: Role-based redirect
+                    setTimeout(() => {
+                        if (user.role === 'warden') {
+                            window.location.href = 'warden.html';
+                        } else if (user.role === 'admin') {
+                            window.location.href = 'admin.html';
+                        } else {
+                            window.location.href = 'index.html';
+                        }
+                    }, 800);
+
+                } else {
+                    showError(data.message || 'Invalid email or password.');
+                }
+            })
+            .catch(() => {
+                loader.style.display = 'none';
+                loader.classList.add('hidden');
+                showError('Could not connect to server. Is Flask running?');
+            });
+        });
+
+        // ── Toggle Password Visibility ────────────────────────
+        function togglePass() {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('pass-eye');
+            if (input.type === 'password') {
+                input.type    = 'text';
+                icon.className = 'fa-regular fa-eye-slash';
+            } else {
+                input.type    = 'password';
+                icon.className = 'fa-regular fa-eye';
+            }
+        }
+
+        // ── Fill Demo Credentials ─────────────────────────────
+        function fillLogin(email, password) {
+            document.getElementById('email').value    = email;
+            document.getElementById('password').value = password;
+            document.getElementById('email').focus();
+        }
+
+        // ── Toast Helpers ─────────────────────────────────────
+        function showError(msg) {
+            const toast = document.getElementById('error-toast');
+            document.getElementById('error-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3500);
+        }
+
+        function showSuccess(msg) {
+            const toast = document.getElementById('success-toast');
+            document.getElementById('success-msg').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('translate-y-[-20px]', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 2500);
+        }
+
+        // ── Auto-fill remembered email on page load ───────────
+        window.addEventListener('DOMContentLoaded', () => {
+            const remembered = localStorage.getItem('hms_remember_email');
+            if (remembered) {
+                document.getElementById('email').value = remembered;
+                document.getElementById('remember-me').checked = true;
+                document.getElementById('password').focus();
+            }
+
+            // If already logged in, skip login page
+            const user = localStorage.getItem('hms_user');
+            if (user) {
+                const parsed = JSON.parse(user);
+                if (parsed.role === 'warden')      window.location.href = 'warden.html';
+                else if (parsed.role === 'admin')  window.location.href = 'admin.html';
+                else                               window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+</body>
+</html>

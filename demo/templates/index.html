@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal | Hostel Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800">
+<div class="flex h-screen overflow-hidden relative">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="absolute md:relative z-30 w-64 h-full bg-slate-900 text-white transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col shadow-2xl">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-hotel text-white text-sm"></i>
+                </div>
+                <h1 class="font-bold text-lg tracking-wide">HMS Student</h1>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <nav class="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+            <button onclick="showSection('dashboard',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 bg-blue-600/10 text-blue-400 border-r-4 border-blue-500">
+                <i class="fa-solid fa-chart-line w-5"></i> Dashboard
+            </button>
+            <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Account</div>
+            <button onclick="showSection('notifications',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <div class="relative"><i class="fa-solid fa-bell w-5"></i><span id="notif-dot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-slate-900 hidden"></span></div> Notifications
+            </button>
+            <button onclick="showSection('profile',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-user-gear w-5"></i> My Profile
+            </button>
+            <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Admissions</div>
+            <button onclick="showSection('admission-app',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-file-signature w-5"></i> Admission App
+            </button>
+            <button onclick="showSection('allocation-status',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-bed w-5"></i> Allocation Status
+            </button>
+            <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Services</div>
+            <button onclick="showSection('room-change',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-right-left w-5"></i> Room Change
+            </button>
+            <button onclick="showSection('complaints',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-triangle-exclamation w-5"></i> Complaints
+            </button>
+            <div class="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider mt-2">Records</div>
+            <button onclick="showSection('fees',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-credit-card w-5"></i> Fee Payment
+            </button>
+            <button onclick="showSection('attendance',this)" class="nav-item w-full text-left px-4 py-3 rounded-lg hover:bg-slate-800 transition flex items-center gap-3 text-slate-300">
+                <i class="fa-solid fa-calendar-check w-5"></i> Attendance
+            </button>
+        </nav>
+        <div class="p-4 border-t border-slate-800 bg-slate-900/50">
+            <div class="flex items-center gap-3 px-2">
+                <div id="sidebar-avatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-sm font-bold shadow-lg">?</div>
+                <div class="overflow-hidden">
+                    <p id="sidebar-name" class="font-medium text-sm truncate">Student</p>
+                    <p id="sidebar-id" class="text-xs text-slate-400">ID: —</p>
+                </div>
+                <button onclick="logoutUser()" class="p-2 text-slate-400 hover:text-red-400 transition" title="Logout">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
+
+    <!-- MAIN -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50">
+        <header class="bg-white border-b border-slate-200 p-4 flex justify-between items-center md:hidden sticky top-0 z-10">
+            <h1 class="font-bold text-slate-700">Hostel Portal</h1>
+            <button onclick="toggleSidebar()" class="text-slate-600 w-8 h-8 flex items-center justify-center rounded hover:bg-slate-100">
+                <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 lg:p-10" id="content-area">
+
+            <!-- DASHBOARD -->
+            <div id="dashboard" class="section fade-in max-w-6xl mx-auto">
+                <div class="flex justify-between items-end mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Welcome back, <span id="dash-welcome-name"></span>!</h2>
+                    <span class="hidden md:inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium border border-green-200">
+                        <i class="fa-solid fa-circle text-[10px] mr-1"></i> Active Resident
+                    </span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden hover:shadow-md transition">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-file-invoice text-6xl text-yellow-500"></i></div>
+                        <div class="text-slate-500 text-sm font-medium mb-1">Fee Status</div>
+                        <div id="dash-fee-status" class="text-2xl font-bold text-slate-800">—</div>
+                        <div id="dash-fee-due" class="mt-2 text-xs font-semibold inline-block px-2 py-1 rounded"></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden hover:shadow-md transition">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-calendar-check text-6xl text-blue-500"></i></div>
+                        <div class="text-slate-500 text-sm font-medium mb-1">Attendance</div>
+                        <div id="dash-attendance" class="text-2xl font-bold text-slate-800">—</div>
+                        <div id="dash-attendance-detail" class="mt-2 text-xs text-slate-400"></div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden hover:shadow-md transition">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-bell text-6xl text-purple-500"></i></div>
+                        <div class="text-slate-500 text-sm font-medium mb-1">Notifications</div>
+                        <div id="dash-notif-count" class="text-2xl font-bold text-slate-800">—</div>
+                        <div class="mt-2 text-xs text-blue-600 cursor-pointer hover:underline" onclick="showSection('notifications',null)">View all</div>
+                    </div>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 relative overflow-hidden hover:shadow-md transition">
+                        <div class="absolute right-0 top-0 p-4 opacity-10"><i class="fa-solid fa-wrench text-6xl text-orange-500"></i></div>
+                        <div class="text-slate-500 text-sm font-medium mb-1">Complaints</div>
+                        <div id="dash-complaints" class="text-2xl font-bold text-slate-800">—</div>
+                        <div id="dash-complaints-detail" class="mt-2 text-xs font-semibold inline-block px-2 py-1 rounded"></div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+                    <h3 class="font-bold text-slate-800 mb-4 border-b pb-2">Recent Timeline</h3>
+                    <div id="dash-timeline" class="space-y-6"><p class="text-slate-400 text-sm">Loading...</p></div>
+                </div>
+            </div>
+
+            <!-- ADMISSION APPLICATION -->
+            <div id="admission-app" class="section hidden fade-in max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold mb-2 text-slate-800">Admission Application</h2>
+                <p class="text-slate-500 mb-6">Apply for the upcoming academic year 2026-2027.</p>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-8">
+                    <div class="bg-blue-50 border-l-4 border-blue-500 p-4 flex items-start gap-3">
+                        <i class="fa-solid fa-circle-info mt-0.5 text-blue-600"></i>
+                        <div>
+                            <p class="text-sm text-blue-800 font-medium">Priority Allocation Active</p>
+                            <p class="text-xs text-blue-600 mt-1">Rooms are allocated based on distance, income, and SGPA.</p>
+                        </div>
+                    </div>
+                    <form id="admissionForm" class="space-y-8">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">1</span>
+                                Personal Details
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">First Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="firstName" required placeholder="Enter First Name" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Last Name <span class="text-red-500">*</span></label>
+                                    <input type="text" name="lastName" required placeholder="Enter Last Name" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address <span class="text-red-500">*</span></label>
+                                    <!-- FIX: pre-fill with logged-in user's email and make readonly -->
+                                    <input type="email" name="studentEmail" id="admission-email" required readonly
+                                        class="w-full border border-slate-200 bg-slate-50 rounded-lg px-3 py-2.5 outline-none text-slate-500 cursor-not-allowed">
+                                    <p class="text-xs text-slate-400 mt-1">Uses your account email to track application status.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Guardian Name</label>
+                                    <input type="text" name="guardianName" placeholder="Enter Guardian Name" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Emergency Contact</label>
+                                    <input type="tel" name="emergencyContact" placeholder="+91 99999 00000" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 text-xs">2</span>
+                                Priority Criteria
+                            </h3>
+                            <p class="text-xs text-slate-400 mb-4 ml-8">Distance and income carry equal weight. SGPA is considered from Year 2 onwards.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Distance from Home (km) <span class="text-red-500">*</span></label>
+                                    <input type="number" name="distance" required min="0" placeholder="e.g. 150" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <p class="text-xs text-slate-400 mt-1">Greater distance → higher priority.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Annual Family Income (₹) <span class="text-red-500">*</span></label>
+                                    <input type="number" name="annual_income" required min="0" placeholder="e.g. 300000" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <p class="text-xs text-slate-400 mt-1">Lower income → higher priority.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">
+                                        Current SGPA <span class="text-slate-400 font-normal">(0.0–10.0)</span>
+                                        <span id="sgpa-year-note" class="ml-1 text-xs text-blue-500 font-medium"></span>
+                                    </label>
+                                    <input type="number" name="sgpa" min="0" max="10" step="0.01" placeholder="e.g. 8.5" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+                                    <p class="text-xs text-slate-400 mt-1">Year 1 students: enter 0 or leave blank.</p>
+                                </div>
+                                <div class="flex flex-col justify-center bg-blue-50 border border-blue-200 rounded-lg px-5 py-4">
+                                    <p class="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Estimated Priority Score</p>
+                                    <p id="priority-preview" class="text-3xl font-bold text-blue-700">—</p>
+                                    <p class="text-xs text-blue-400 mt-1">Fill in the fields to see your score.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="form-message" class="hidden p-4 rounded-lg text-sm font-medium"></div>
+                        <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-100">
+                            <button type="button" onclick="showSection('dashboard',null)" class="text-slate-500 hover:text-slate-700 font-medium">Cancel</button>
+                            <button type="submit" id="submit-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium shadow-sm transition flex items-center gap-2">
+                                <span id="submit-label">Submit Application</span>
+                                <i id="submit-spinner" class="fa-solid fa-spinner fa-spin hidden"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ALLOCATION STATUS -->
+            <div id="allocation-status" class="section hidden fade-in max-w-5xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800">Allocation Status</h2>
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 mb-8">
+                    <div class="relative">
+                        <div class="absolute top-1/2 left-0 w-full h-1 bg-slate-100 -translate-y-1/2 hidden md:block rounded"></div>
+                        <div class="flex flex-col md:flex-row justify-between relative z-10 gap-6 md:gap-0">
+                            <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
+                                <div id="step-applied" class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white"><i class="fa-solid fa-file-pen"></i></div>
+                                <div class="md:text-center"><p class="text-sm font-bold text-slate-800">Applied</p><p class="text-xs text-slate-500">Submitted</p></div>
+                            </div>
+                            <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
+                                <div id="step-verified" class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white"><i class="fa-solid fa-check-double"></i></div>
+                                <div class="md:text-center"><p class="text-sm font-bold text-slate-800">Verified</p><p class="text-xs text-slate-500">Under Review</p></div>
+                            </div>
+                            <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
+                                <div id="step-allocating" class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white"><i class="fa-solid fa-hourglass-half"></i></div>
+                                <div class="md:text-center"><p class="text-sm font-bold text-slate-800">Allocating</p><p class="text-xs text-slate-500">In Progress</p></div>
+                            </div>
+                            <div class="flex flex-row md:flex-col items-center gap-4 md:gap-2">
+                                <div id="step-checkin" class="w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white"><i class="fa-solid fa-key"></i></div>
+                                <div class="md:text-center"><p class="text-sm font-bold text-slate-800">Check-In</p><p class="text-xs text-slate-500">Pending</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="allocation-result" class="border-2 border-dashed border-slate-300 rounded-xl p-8 flex flex-col items-center justify-center text-center bg-slate-50">
+                    <div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400"><i class="fa-solid fa-building-user text-2xl"></i></div>
+                    <h3 class="text-lg font-bold text-slate-700">Checking Status...</h3>
+                    <p class="text-slate-500 max-w-md mt-2">Please wait.</p>
+                </div>
+            </div>
+
+            <!-- ROOM CHANGE -->
+            <div id="room-change" class="section hidden fade-in max-w-6xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800">Room Change Request</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold text-slate-700">Submit New Request</h3>
+                            <span id="current-room-badge" class="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-1 rounded">Current: —</span>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Reason Category</label>
+                            <select id="rc-reason" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Medical Issue</option>
+                                <option>Roommate Conflict</option>
+                                <option>Maintenance Issue</option>
+                                <option>Upgrade Request</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Preferred Block / Floor</label>
+                            <input type="text" id="rc-block" placeholder="e.g. Block B, Ground Floor" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Detailed Explanation <span class="text-red-500">*</span></label>
+                            <textarea id="rc-detail" rows="4" placeholder="Explain why you need this change..." class="w-full border border-slate-300 rounded-lg px-3 py-2.5 outline-none resize-none focus:ring-2 focus:ring-blue-500"></textarea>
+                        </div>
+                        <button onclick="submitRoomChange()" class="w-full bg-slate-800 text-white font-medium py-2.5 rounded-lg hover:bg-slate-900 transition">Submit Request</button>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-700 mb-6">Request History</h3>
+                        <div id="room-change-history" class="space-y-4"><p class="text-slate-400 text-sm">Loading...</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMPLAINTS -->
+            <div id="complaints" class="section hidden fade-in max-w-5xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Complaints & Issues</h2>
+                    <button onclick="openComplaintModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Report Issue
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="flex border-b border-slate-200">
+                        <button id="tab-active" onclick="showComplaints('active',this)" class="px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50/50">Active</button>
+                        <button id="tab-resolved" onclick="showComplaints('resolved',this)" class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50">Resolved</button>
+                    </div>
+                    <div id="complaints-list" class="divide-y divide-slate-100"><p class="p-6 text-slate-400 text-sm">Loading...</p></div>
+                </div>
+            </div>
+
+            <!-- FEES -->
+            <div id="fees" class="section hidden fade-in max-w-5xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 text-slate-800">Fee & Payments</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div id="fee-due-card" class="col-span-1 bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full"></div>
+                        <h3 class="text-red-100 text-sm font-medium uppercase mb-1">Total Outstanding</h3>
+                        <div id="fee-total-due" class="text-3xl font-bold mb-4">₹ —</div>
+                        <p id="fee-due-date" class="text-xs text-red-100 mb-6"></p>
+                        <button class="w-full bg-white text-red-600 font-bold py-2 rounded shadow hover:bg-red-50 transition">Pay Now</button>
+                    </div>
+                    <div class="col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                        <h3 class="font-bold text-slate-700 mb-4">Payment Breakdown</h3>
+                        <div id="fee-breakdown" class="text-sm text-slate-500">Loading...</div>
+                    </div>
+                </div>
+                <h3 class="font-bold text-slate-700 mb-4">Transaction History</h3>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                            <tr><th class="p-4">Date / Due</th><th class="p-4">Description</th><th class="p-4">Amount</th><th class="p-4">Status</th></tr>
+                        </thead>
+                        <tbody id="fee-history" class="divide-y divide-slate-100">
+                            <tr><td colspan="4" class="p-4 text-slate-400 text-sm">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ATTENDANCE -->
+            <div id="attendance" class="section hidden fade-in max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-slate-800">Attendance Record</h2>
+                    <div class="flex items-center gap-2 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+                        <button onclick="changeAttendanceMonth(-1)" class="px-3 py-1 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="att-month-label" class="text-sm font-bold text-slate-700 px-2"></span>
+                        <button onclick="changeAttendanceMonth(1)" class="px-3 py-1 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <div class="grid grid-cols-7 gap-2 mb-2 text-center">
+                            <div class="text-xs font-bold text-slate-400 uppercase">Sun</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Mon</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Tue</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Wed</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Thu</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Fri</div>
+                            <div class="text-xs font-bold text-slate-400 uppercase">Sat</div>
+                        </div>
+                        <div id="att-calendar" class="grid grid-cols-7 gap-2">
+                            <p class="col-span-7 text-slate-400 text-sm text-center py-4">Loading...</p>
+                        </div>
+                        <div class="flex gap-4 mt-6 justify-center">
+                            <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-green-500 rounded-sm"></span> Present</div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-red-500 rounded-sm"></span> Absent</div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-yellow-400 rounded-sm"></span> Late</div>
+                            <div class="flex items-center gap-2 text-xs text-slate-600"><span class="w-3 h-3 bg-slate-200 rounded-sm"></span> No Record</div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center">
+                            <div id="att-pct" class="text-4xl font-bold text-blue-600 mb-1">—</div>
+                            <div class="text-sm text-slate-500 font-medium uppercase tracking-wide">Attendance Score</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                            <h4 class="font-bold text-slate-700 mb-4 text-sm">Summary</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm"><span class="text-slate-500">Working Days</span><span id="att-total" class="font-medium">—</span></div>
+                                <div class="flex justify-between text-sm"><span class="text-slate-500">Present</span><span id="att-present" class="font-medium text-green-600">—</span></div>
+                                <div class="flex justify-between text-sm"><span class="text-slate-500">Absent</span><span id="att-absent" class="font-medium text-red-600">—</span></div>
+                                <div class="flex justify-between text-sm"><span class="text-slate-500">Late Entries</span><span id="att-late" class="font-medium text-yellow-600">—</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTIFICATIONS -->
+            <div id="notifications" class="section hidden fade-in max-w-4xl mx-auto space-y-6">
+                <div class="flex items-center justify-between">
+                    <div><h2 class="text-2xl font-bold text-slate-800">Notifications</h2><p class="text-slate-500 text-sm mt-1">Updates and alerts</p></div>
+                    <button class="text-blue-600 text-sm font-medium hover:underline">Mark all as read</button>
+                </div>
+                <div id="notification-list" class="space-y-4"></div>
+            </div>
+
+            <!-- PROFILE -->
+            <div id="profile" class="section hidden fade-in max-w-4xl mx-auto space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="h-32 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
+                    <div class="px-8 pb-8">
+                        <div class="relative flex justify-between items-end -mt-12 mb-6">
+                            <div class="w-24 h-24 rounded-2xl bg-white p-1 shadow-lg">
+                                <div id="profile-avatar-large" class="w-full h-full rounded-xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-3xl font-bold text-white">?</div>
+                            </div>
+                            <button class="bg-white px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold hover:bg-slate-50 transition">Edit Profile</button>
+                        </div>
+                        <div>
+                            <h2 id="profile-name-large" class="text-2xl font-bold text-slate-800">—</h2>
+                            <p id="profile-role" class="text-slate-500"></p>
+                        </div>
+                        <div id="profile-stats" class="grid grid-cols-3 gap-4 mt-8 py-6 border-t border-b border-slate-100">
+                            <div class="text-center"><div id="ps-room" class="font-bold text-slate-800">—</div><div class="text-slate-400 text-xs uppercase tracking-wider">Room</div></div>
+                            <div class="text-center border-x border-slate-100"><div id="ps-hostel" class="font-bold text-slate-800">—</div><div class="text-slate-400 text-xs uppercase tracking-wider">Hostel</div></div>
+                            <div class="text-center"><div class="font-bold text-green-500">Active</div><div class="text-slate-400 text-xs uppercase tracking-wider">Status</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-address-card text-blue-500"></i> Personal Information</h3>
+                        <div class="space-y-4">
+                            <div><label class="text-xs text-slate-400 uppercase font-bold">Email Address</label><p id="profile-email" class="text-slate-700 font-medium">—</p></div>
+                            <div><label class="text-xs text-slate-400 uppercase font-bold">Phone Number</label><p id="profile-phone" class="text-slate-700 font-medium">—</p></div>
+                            <div><label class="text-xs text-slate-400 uppercase font-bold">Registration ID</label><p id="profile-reg" class="text-slate-700 font-medium">—</p></div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-blue-500"></i> Emergency Contact</h3>
+                        <div class="space-y-4">
+                            <div><label class="text-xs text-slate-400 uppercase font-bold">Guardian Name</label><p id="profile-guardian" class="text-slate-700 font-medium">—</p></div>
+                            <div><label class="text-xs text-slate-400 uppercase font-bold">Address</label><p id="profile-address" class="text-slate-700 font-medium">—</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end content-area -->
+    </main>
+</div>
+
+<!-- COMPLAINT MODAL -->
+<div id="complaintModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Report Issue</h3>
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Complaint Type</label>
+            <input type="text" id="comp_type" placeholder="e.g. Plumbing, Electricity, WiFi" class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-slate-700 mb-1.5">Description</label>
+            <textarea id="comp_desc" rows="4" placeholder="Describe your issue in detail..." class="w-full border border-slate-300 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+        </div>
+        <div class="flex gap-3 justify-end">
+            <button onclick="closeComplaintModal()" class="px-4 py-2 text-slate-600 hover:text-slate-800 font-medium">Cancel</button>
+            <button onclick="submitComplaint()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium transition">Submit</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "http://127.0.0.1:5000";
+
+    // ── Helpers ───────────────────────────────────────────────
+    function getUser() { return JSON.parse(localStorage.getItem('hms_user')) || {}; }
+
+    function setInitials(user) {
+        const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+        document.getElementById('sidebar-avatar').textContent = initials;
+        document.getElementById('sidebar-name').textContent   = user.name || '—';
+        document.getElementById('sidebar-id').textContent     = 'ID: ' + (user.id || '—');
+    }
+
+    // ── Sidebar ───────────────────────────────────────────────
+    function toggleSidebar() {
+        if (window.innerWidth >= 768) return;
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('overlay');
+        const closed = sb.classList.contains('-translate-x-full');
+        sb.classList.toggle('-translate-x-full', !closed);
+        ov.classList.toggle('hidden', !closed);
+    }
+
+    // ── Navigation ────────────────────────────────────────────
+    function showSection(sectionId, btn) {
+        document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+        const t = document.getElementById(sectionId);
+        if (t) t.classList.remove('hidden');
+
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.remove('bg-blue-600/10','text-blue-400','border-r-4','border-blue-500');
+            el.classList.add('text-slate-300');
+        });
+        if (btn) {
+            btn.classList.remove('text-slate-300');
+            btn.classList.add('bg-blue-600/10','text-blue-400','border-r-4','border-blue-500');
+        }
+
+        const loaders = {
+            'dashboard':         loadDashboard,
+            'complaints':        loadComplaints,
+            'room-change':       loadRoomChangeHistory,
+            'profile':           loadProfileData,
+            'notifications':     loadNotifications,
+            'allocation-status': loadAllocationStatus,
+            'fees':              loadFees,
+            'attendance':        loadAttendance,
+            'admission-app':     initAdmissionForm,
+        };
+        if (loaders[sectionId]) loaders[sectionId]();
+
+        if (window.innerWidth < 768) {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('overlay').classList.add('hidden');
+        }
+    }
+
+    function logoutUser() {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('hms_user');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // ── Dashboard ─────────────────────────────────────────────
+    function loadDashboard() {
+        const user = getUser();
+        if (!user.id) return;
+        document.getElementById('dash-welcome-name').textContent = user.name || '';
+
+        fetch(`${API}/student/dashboard/${user.id}`)
+            .then(r => r.json())
+            .then(d => {
+                // Fee card
+                const feeEl  = document.getElementById('dash-fee-status');
+                const dueEl  = document.getElementById('dash-fee-due');
+                feeEl.textContent = d.fee_status || 'N/A';
+                if (d.fee_amount > 0) {
+                    dueEl.textContent  = 'Due: ₹' + Number(d.fee_amount).toLocaleString();
+                    dueEl.className    = 'mt-2 text-xs text-red-500 font-semibold bg-red-50 inline-block px-2 py-1 rounded';
+                } else {
+                    dueEl.textContent  = 'Up to date';
+                    dueEl.className    = 'mt-2 text-xs text-green-600 font-semibold bg-green-50 inline-block px-2 py-1 rounded';
+                }
+
+                // Attendance card
+                document.getElementById('dash-attendance').textContent       = d.attendance_pct !== undefined ? d.attendance_pct + '%' : 'N/A';
+                document.getElementById('dash-attendance-detail').textContent = d.present_days + ' Present / ' + d.total_days + ' Days';
+
+                // Notifications card (static count for now)
+                document.getElementById('dash-notif-count').textContent = '3 New';
+
+                // Complaints card
+                const cmpEl    = document.getElementById('dash-complaints');
+                const cmpDetail = document.getElementById('dash-complaints-detail');
+                cmpEl.textContent = d.active_complaints + ' Active';
+                if (d.active_complaints > 0) {
+                    cmpDetail.textContent = 'In Progress';
+                    cmpDetail.className   = 'mt-2 text-xs text-orange-500 bg-orange-50 font-semibold inline-block px-2 py-1 rounded';
+                } else {
+                    cmpDetail.textContent = 'All Clear';
+                    cmpDetail.className   = 'mt-2 text-xs text-green-600 bg-green-50 font-semibold inline-block px-2 py-1 rounded';
+                }
+
+                // Timeline
+                const tl     = document.getElementById('dash-timeline');
+                const colors = ['blue','green','purple','orange','slate'];
+                if (d.timeline && d.timeline.length > 0) {
+                    tl.innerHTML = d.timeline.map((item, i) => `
+                        <div class="flex gap-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-2 h-2 rounded-full bg-${colors[i % colors.length]}-500 mt-1.5 flex-shrink-0"></div>
+                                ${i < d.timeline.length - 1 ? '<div class="w-0.5 flex-1 bg-slate-100 mt-1"></div>' : ''}
+                            </div>
+                            <div class="pb-4">
+                                <p class="text-sm font-medium text-slate-800">${item.event}</p>
+                                <p class="text-xs text-slate-500">${item.date}</p>
+                            </div>
+                        </div>`).join('');
+                } else {
+                    tl.innerHTML = '<p class="text-slate-400 text-sm">No recent activity.</p>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('dash-welcome-name').textContent = user.name || '';
+            });
+    }
+
+    // ── Admission Form ────────────────────────────────────────
+    // FIX: Pre-fills email from localStorage and uses correct year from user object
+    function initAdmissionForm() {
+        const user = getUser();
+        // Pre-fill email field with logged-in user's email (readonly)
+        const emailField = document.getElementById('admission-email');
+        if (emailField) emailField.value = user.email || '';
+
+        // Update SGPA note with correct year
+        const year = user.year || 1;
+        const note = document.getElementById('sgpa-year-note');
+        if (note) {
+            note.textContent = year <= 1
+                ? '(not counted for Year 1)'
+                : `(weight ×${((year - 1) * 0.5).toFixed(1)} for Year ${year})`;
+        }
+        previewPriority();
+    }
+
+    function previewPriority() {
+        const user  = getUser();
+        const year  = user.year || 1;
+        const form  = document.getElementById('admissionForm');
+        if (!form) return;
+        const dist  = parseFloat(form.querySelector('[name=distance]').value)      || 0;
+        const inc   = parseFloat(form.querySelector('[name=annual_income]').value) || 0;
+        const sg    = parseFloat(form.querySelector('[name=sgpa]').value)          || 0;
+        const score = (Math.min(dist / 10, 50) + Math.max(0, 50 - inc / 20000) + sg * Math.max(0, year - 1) * 0.5).toFixed(2);
+        document.getElementById('priority-preview').textContent = (dist || inc || sg) ? score : '—';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const user = getUser();
+        if (user.name) setInitials(user);
+        loadDashboard();
+
+        // Attach priority preview listeners
+        const form = document.getElementById('admissionForm');
+        if (form) {
+            ['distance', 'annual_income', 'sgpa'].forEach(n => {
+                form.querySelector(`[name=${n}]`)?.addEventListener('input', previewPriority);
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn     = document.getElementById('submit-btn');
+                const label   = document.getElementById('submit-label');
+                const spinner = document.getElementById('submit-spinner');
+                const msgBox  = document.getElementById('form-message');
+                const fd      = new FormData(form);
+                const user    = getUser();
+
+                const firstName = fd.get('firstName').trim();
+                const lastName  = fd.get('lastName').trim();
+                const email     = (fd.get('studentEmail') || '').trim().toLowerCase();
+                const dist      = parseInt(fd.get('distance'));
+                const income    = parseFloat(fd.get('annual_income'));
+                const sgpaRaw   = fd.get('sgpa');
+                const sgpa      = sgpaRaw === '' ? 0.0 : parseFloat(sgpaRaw);
+
+                if (!firstName || !lastName)               { showFormMsg(msgBox, 'Please enter your full name.', 'error'); return; }
+                if (!email)                                { showFormMsg(msgBox, 'Email is missing.', 'error'); return; }
+                if (isNaN(dist) || dist < 0)               { showFormMsg(msgBox, 'Please enter a valid distance.', 'error'); return; }
+                if (isNaN(income) || income < 0)           { showFormMsg(msgBox, 'Please enter a valid annual income.', 'error'); return; }
+                if (isNaN(sgpa) || sgpa < 0 || sgpa > 10) { showFormMsg(msgBox, 'SGPA must be between 0.0 and 10.0.', 'error'); return; }
+
+                const payload = {
+                    name:              (firstName + ' ' + lastName).trim(),
+                    email:             email,
+                    year:              user.year || 1,
+                    distance:          dist,
+                    annual_income:     income,
+                    sgpa:              sgpa,
+                    guardian_name:     fd.get('guardianName') || '',
+                    emergency_contact: fd.get('emergencyContact') || ''
+                };
+
+                btn.disabled = true;
+                label.textContent = 'Submitting...';
+                spinner.classList.remove('hidden');
+                msgBox.classList.add('hidden');
+
+                try {
+                    const res    = await fetch(`${API}/apply`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    const result = await res.json();
+                    if (res.ok) {
+                        showFormMsg(msgBox, `${result.message} Your priority score: ${result.priority_score}.`, 'success');
+                        form.reset();
+                        initAdmissionForm();
+                    } else {
+                        showFormMsg(msgBox, result.message || result.error || 'Submission failed.', 'error');
+                    }
+                } catch {
+                    showFormMsg(msgBox, 'Could not connect to server. Is the backend running?', 'error');
+                } finally {
+                    btn.disabled = false;
+                    label.textContent = 'Submit Application';
+                    spinner.classList.add('hidden');
+                }
+            });
+        }
+    });
+
+    function showFormMsg(box, text, type) {
+        box.textContent = text;
+        box.className   = 'p-4 rounded-lg text-sm font-medium ' +
+            (type === 'success'
+                ? 'bg-green-50 text-green-700 border border-green-200'
+                : 'bg-red-50 text-red-700 border border-red-200');
+        box.classList.remove('hidden');
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ── Allocation Status ─────────────────────────────────────
+    // FIX: Progress bar steps now update dynamically based on status
+    async function loadAllocationStatus() {
+        const user = getUser();
+        if (!user.email) return;
+        const box = document.getElementById('allocation-result');
+
+        // Reset all steps to grey
+        ['step-applied','step-verified','step-allocating','step-checkin'].forEach(id => {
+            const el = document.getElementById(id);
+            el.className = 'w-10 h-10 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center shadow-sm ring-4 ring-white';
+        });
+
+        try {
+            const res = await fetch(`${API}/my-application?email=${encodeURIComponent(user.email)}`);
+            if (!res.ok) {
+                box.innerHTML = `<div class="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400"><i class="fa-solid fa-building-user text-2xl"></i></div><h3 class="text-lg font-bold text-slate-700">No Application Found</h3><p class="text-slate-500 max-w-md mt-2">You have not submitted an application yet.</p>`;
+                return;
+            }
+            const app = await res.json();
+
+            // Applied step always green if we got here
+            document.getElementById('step-applied').className =
+                'w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white';
+            document.getElementById('step-applied').innerHTML = '<i class="fa-solid fa-check"></i>';
+
+            if (app.status === 'Pending') {
+                document.getElementById('step-verified').className =
+                    'w-10 h-10 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white animate-pulse';
+                box.innerHTML = `<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4 text-blue-500"><i class="fa-solid fa-clock text-2xl"></i></div><h3 class="text-lg font-bold text-slate-700">Application Under Review</h3><p class="text-slate-500 max-w-md mt-2">Allocation typically runs within 2–3 days. Your priority score: <strong>${app.priority_score}</strong>.</p>`;
+
+            } else if (app.status === 'Waiting') {
+                document.getElementById('step-verified').className =
+                    'w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white';
+                document.getElementById('step-verified').innerHTML = '<i class="fa-solid fa-check"></i>';
+                document.getElementById('step-allocating').className =
+                    'w-10 h-10 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white animate-pulse';
+                box.innerHTML = `<div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-4 text-yellow-600"><i class="fa-solid fa-hourglass-half text-2xl"></i></div><h3 class="text-lg font-bold text-yellow-700">On Waiting List</h3><p class="text-slate-500 max-w-md mt-2">A room will be assigned when one becomes available.</p>`;
+
+            } else if (app.status === 'Approved' && app.room_number) {
+                ['step-applied','step-verified','step-allocating'].forEach(id => {
+                    document.getElementById(id).className =
+                        'w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white';
+                    document.getElementById(id).innerHTML = '<i class="fa-solid fa-check"></i>';
+                });
+                document.getElementById('step-checkin').className =
+                    'w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-sm ring-4 ring-white animate-pulse';
+                box.innerHTML = `<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4 text-green-600"><i class="fa-solid fa-key text-2xl"></i></div><h3 class="text-lg font-bold text-green-700">Room Allocated!</h3><p class="text-slate-600 mt-2 text-lg font-semibold">Room ${app.room_number}</p><p class="text-slate-500 text-sm mt-1">Please visit the warden's office for check-in.</p>`;
+            }
+        } catch {
+            box.innerHTML = `<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 text-red-400"><i class="fa-solid fa-plug-circle-xmark text-2xl"></i></div><h3 class="text-lg font-bold text-slate-700">Could Not Load Status</h3><p class="text-slate-500 max-w-md mt-2">Please check your connection and try again.</p>`;
+        }
+    }
+
+    // ── Toast Notifications ───────────────────────────────────
+    function showToast(message, type = 'success') {
+        const existing = document.getElementById('hms-toast');
+        if (existing) existing.remove();
+        const colors = { success:'bg-green-600', warning:'bg-yellow-500', error:'bg-red-600', info:'bg-blue-600' };
+        const icons  = { success:'fa-circle-check', warning:'fa-triangle-exclamation', error:'fa-circle-xmark', info:'fa-circle-info' };
+        const toast  = document.createElement('div');
+        toast.id        = 'hms-toast';
+        toast.className = `fixed bottom-6 right-6 z-[9999] flex items-center gap-3 px-5 py-3 rounded-xl shadow-xl text-white text-sm font-medium ${colors[type]||colors.info} transition-all duration-300 opacity-0 translate-y-2`;
+        toast.innerHTML = `<i class="fa-solid ${icons[type]||icons.info}"></i><span>${message}</span>`;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.remove('opacity-0','translate-y-2'));
+        setTimeout(() => { toast.classList.add('opacity-0','translate-y-2'); setTimeout(() => toast.remove(), 300); }, 3500);
+    }
+
+    // ── Complaints ────────────────────────────────────────────
+    // Seeded with mock data so the page works without a backend
+    let allComplaints = [
+        { comp_id: 92, comp_type: 'Leaking Tap in Bathroom', comp_date: '2026-01-28', status: 'In Progress', response: 'Plumber scheduled for Feb 3.' },
+        { comp_id: 85, comp_type: 'WiFi Not Working',        comp_date: '2025-12-10', status: 'Resolved',    response: 'Router replaced on Dec 12.'  },
+        { comp_id: 78, comp_type: 'Broken Window Latch',     comp_date: '2025-11-05', status: 'Resolved',    response: 'Fixed by maintenance on Nov 7.' }
+    ];
+
+    function openComplaintModal()  { document.getElementById('complaintModal').classList.remove('hidden'); }
+    function closeComplaintModal() {
+        document.getElementById('complaintModal').classList.add('hidden');
+        document.getElementById('comp_type').value = '';
+        document.getElementById('comp_desc').value = '';
+    }
+
+    function submitComplaint() {
+        const user        = getUser();
+        const comp_type   = document.getElementById('comp_type').value.trim();
+        const description = document.getElementById('comp_desc').value.trim();
+        if (!comp_type || !description) { alert('Please fill in all fields.'); return; }
+
+        fetch(`${API}/submit_complaint`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({
+                student_id: user.id,
+                room_id:    user.room_id || null,
+                comp_type,
+                description
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            closeComplaintModal();
+            loadComplaints();
+            showToast(data.message || 'Complaint submitted!', 'success');
+        })
+        .catch(() => {
+            // ── Offline / no backend: add to local mock list so UI still works ──
+            const newId = Math.floor(Math.random() * 9000) + 1000;
+            allComplaints.unshift({
+                comp_id:   newId,
+                comp_type: comp_type,
+                comp_date: new Date().toISOString().split('T')[0],
+                status:    'Pending',
+                response:  null
+            });
+            closeComplaintModal();
+            showComplaints('active', document.getElementById('tab-active'));
+            showToast(`Complaint #CMP-${newId} submitted (offline mode).`, 'warning');
+        });
+    }
+
+    function loadComplaints() {
+        const user = getUser();
+        if (!user.id) {
+            // No user logged in — just render whatever is in allComplaints (mock data)
+            showComplaints('active', document.getElementById('tab-active'));
+            return;
+        }
+        fetch(`${API}/complaint_status/${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+                allComplaints = data.complaints || [];
+                showComplaints('active', document.getElementById('tab-active'));
+            })
+            .catch(() => {
+                // Backend not running — keep mock data and render it
+                showComplaints('active', document.getElementById('tab-active'));
+            });
+    }
+
+    function showComplaints(filter, tabBtn) {
+        document.getElementById('tab-active').className   = "px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50";
+        document.getElementById('tab-resolved').className = "px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50";
+        if (tabBtn) tabBtn.className = "px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50/50";
+
+        const list     = document.getElementById('complaints-list');
+        const filtered = allComplaints.filter(c => filter === 'active' ? c.status !== 'Resolved' : c.status === 'Resolved');
+        if (filtered.length === 0) { list.innerHTML = `<p class="p-6 text-slate-400 text-sm">No ${filter} complaints.</p>`; return; }
+
+        const badge = {
+            'Pending':     'bg-yellow-100 text-yellow-700 border-yellow-200',
+            'In Progress': 'bg-orange-100 text-orange-700 border-orange-200',
+            'Resolved':    'bg-green-100 text-green-700 border-green-200'
+        };
+        list.innerHTML = filtered.map(c => `
+            <div class="p-6 hover:bg-slate-50 transition flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+                <div class="flex gap-4 items-center">
+                    <div class="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center"><i class="fa-solid fa-wrench"></i></div>
+                    <div>
+                        <h4 class="font-bold text-slate-800 text-sm">${c.comp_type}</h4>
+                        <p class="text-xs text-slate-500 mt-0.5">ID: #CMP-${c.comp_id} • ${c.comp_date}</p>
+                        ${c.response ? `<p class="text-xs text-slate-600 mt-1"><strong>Response:</strong> ${c.response}</p>` : ''}
+                    </div>
+                </div>
+                <span class="px-3 py-1 text-xs font-bold rounded-full border ${badge[c.status] || 'bg-slate-100 text-slate-600 border-slate-200'}">${c.status}</span>
+            </div>`).join('');
+    }
+
+    // ── Room Change ───────────────────────────────────────────
+    function submitRoomChange() {
+        const user   = getUser();
+        const detail = document.getElementById('rc-detail').value.trim();
+        if (!detail) { alert('Please provide a detailed explanation.'); return; }
+
+        const reason = document.getElementById('rc-reason').value
+            + (document.getElementById('rc-block').value ? ' | Block: ' + document.getElementById('rc-block').value : '')
+            + ' | ' + detail;
+
+        fetch(`${API}/room_change`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // FIX: Don't send req_room_id at all — backend stores NULL
+            body:    JSON.stringify({ student_id: user.id, reason })
+        })
+        .then(r => r.json())
+        .then(data => {
+            alert(data.message);
+            document.getElementById('rc-block').value  = '';
+            document.getElementById('rc-detail').value = '';
+            loadRoomChangeHistory();
+        })
+        .catch(() => alert('Failed to submit request.'));
+    }
+
+    function loadRoomChangeHistory() {
+        const user = getUser();
+        if (!user.id) return;
+
+        // FIX: Show current room number in badge from profile data
+        fetch(`${API}/student/profile/${user.id}`)
+            .then(r => r.json())
+            .then(d => {
+                const badge = document.getElementById('current-room-badge');
+                if (badge && d.profile) {
+                    badge.textContent = 'Current: Room ' + (d.profile.room_number || 'N/A');
+                }
+            }).catch(() => {});
+
+        fetch(`${API}/room_change_status/${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+                const container = document.getElementById('room-change-history');
+                const requests  = data.requests || [];
+                if (requests.length === 0) {
+                    container.innerHTML = '<p class="text-slate-400 text-sm">No requests submitted yet.</p>';
+                    return;
+                }
+                const iconMap  = { 'Approved':'fa-file-circle-check text-green-500', 'Rejected':'fa-file-circle-xmark text-red-500', 'Pending':'fa-file-circle-question text-yellow-500' };
+                const badgeMap = { 'Approved':'bg-green-100 text-green-600', 'Rejected':'bg-red-100 text-red-600', 'Pending':'bg-yellow-100 text-yellow-600' };
+                container.innerHTML = requests.map(r => `
+                    <div class="flex gap-4 p-4 rounded-lg bg-slate-50 border border-slate-100">
+                        <div class="mt-1"><i class="fa-solid ${iconMap[r.status] || 'fa-file text-slate-400'} text-xl"></i></div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <h4 class="font-semibold text-slate-800 text-sm">${r.reason || 'Room Change Request'}</h4>
+                                <span class="text-xs ${badgeMap[r.status] || 'bg-slate-100 text-slate-600'} px-2 py-0.5 rounded font-medium">${r.status}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-1">Submitted: ${r.req_date}</p>
+                        </div>
+                    </div>`).join('');
+            });
+    }
+
+    // ── Fees ──────────────────────────────────────────────────
+    // FIX: Now fetches real fee data from the backend
+    function loadFees() {
+        const user = getUser();
+        if (!user.id) return;
+
+        fetch(`${API}/student/fees/${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+                const transactions = data.transactions || [];
+                const pending      = transactions.filter(t => t.status === 'Pending');
+                const totalDue     = pending.reduce((sum, t) => sum + parseFloat(t.amount), 0);
+
+                document.getElementById('fee-total-due').textContent = '₹ ' + totalDue.toLocaleString('en-IN');
+                if (pending.length > 0 && pending[0].due_date) {
+                    document.getElementById('fee-due-date').textContent = 'Due Date: ' + pending[0].due_date;
+                }
+
+                // Breakdown of pending items
+                const breakdownEl = document.getElementById('fee-breakdown');
+                if (pending.length === 0) {
+                    breakdownEl.innerHTML = '<p class="text-green-600 font-medium">No outstanding fees. You\'re all clear!</p>';
+                    document.getElementById('fee-due-card').className =
+                        'col-span-1 bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white shadow-lg relative overflow-hidden';
+                } else {
+                    breakdownEl.innerHTML = `
+                        <table class="w-full text-sm text-left">
+                            <thead class="text-xs text-slate-400 uppercase border-b border-slate-100">
+                                <tr><th class="pb-2 font-semibold">Description</th><th class="pb-2 font-semibold text-right">Amount</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-50">
+                                ${pending.map(t => `
+                                    <tr><td class="py-3 text-slate-600">${t.description}</td>
+                                        <td class="py-3 text-right font-medium text-slate-800">₹ ${Number(t.amount).toLocaleString('en-IN')}</td></tr>
+                                `).join('')}
+                                <tr><td class="py-3 font-bold text-slate-900">Total</td>
+                                    <td class="py-3 text-right font-bold text-slate-900">₹ ${totalDue.toLocaleString('en-IN')}</td></tr>
+                            </tbody>
+                        </table>`;
+                }
+
+                // Full history
+                const tbody = document.getElementById('fee-history');
+                if (transactions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="p-4 text-slate-400 text-sm">No transactions found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = transactions.map(t => `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-4 text-slate-600">${t.due_date || t.paid_date || '—'}</td>
+                        <td class="p-4 font-medium text-slate-800">${t.description}</td>
+                        <td class="p-4 text-slate-600">₹ ${Number(t.amount).toLocaleString('en-IN')}</td>
+                        <td class="p-4"><span class="${t.status === 'Paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} px-2 py-0.5 rounded text-xs font-bold">${t.status}</span></td>
+                    </tr>`).join('');
+            })
+            .catch(() => {
+                document.getElementById('fee-breakdown').innerHTML = '<p class="text-red-400 text-sm">Failed to load fee data.</p>';
+            });
+    }
+
+    // ── Attendance ────────────────────────────────────────────
+    // FIX: Now fetches real attendance from API and renders a full calendar
+    let attMonth = new Date().getMonth() + 1;
+    let attYear  = new Date().getFullYear();
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+    function changeAttendanceMonth(delta) {
+        attMonth += delta;
+        if (attMonth > 12) { attMonth = 1;  attYear++; }
+        if (attMonth < 1)  { attMonth = 12; attYear--; }
+        loadAttendance();
+    }
+
+    function loadAttendance() {
+        const user = getUser();
+        if (!user.id) return;
+
+        document.getElementById('att-month-label').textContent = monthNames[attMonth - 1] + ' ' + attYear;
+
+        fetch(`${API}/student/attendance/${user.id}?month=${attMonth}&year=${attYear}`)
+            .then(r => r.json())
+            .then(data => {
+                // Update stats
+                document.getElementById('att-pct').textContent     = (data.attendance_pct || 0) + '%';
+                document.getElementById('att-total').textContent   = data.total_days   || 0;
+                document.getElementById('att-present').textContent = data.present_days || 0;
+                document.getElementById('att-absent').textContent  = data.absent_days  || 0;
+                document.getElementById('att-late').textContent    = data.late_days    || 0;
+
+                // Build a lookup: "YYYY-MM-DD" → status
+                const lookup = {};
+                (data.records || []).forEach(r => { lookup[r.date] = r.status; });
+
+                // Render calendar
+                const daysInMonth = new Date(attYear, attMonth, 0).getDate();
+                const firstDay    = new Date(attYear, attMonth - 1, 1).getDay(); // 0=Sun
+                const today       = new Date().toISOString().split('T')[0];
+
+                const colorMap = {
+                    'Present': 'bg-green-100 text-green-700 border-green-200',
+                    'Absent':  'bg-red-100 text-red-700 border-red-200',
+                    'Late':    'bg-yellow-100 text-yellow-700 border-yellow-200'
+                };
+
+                let html = '';
+                // Empty cells before the 1st
+                for (let i = 0; i < firstDay; i++) {
+                    html += '<div class="aspect-square"></div>';
+                }
+                for (let d = 1; d <= daysInMonth; d++) {
+                    const dateStr = `${attYear}-${String(attMonth).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                    const status  = lookup[dateStr];
+                    const isToday = dateStr === today;
+                    if (status) {
+                        html += `<div class="aspect-square rounded-lg flex items-center justify-center text-sm font-bold border ${colorMap[status]} ${isToday ? 'ring-2 ring-offset-1 ring-blue-400' : ''}" title="${status}">${d}</div>`;
+                    } else {
+                        html += `<div class="aspect-square rounded-lg flex items-center justify-center text-sm border border-slate-100 bg-slate-50 text-slate-400 ${isToday ? 'ring-2 ring-offset-1 ring-blue-400' : ''}">${d}</div>`;
+                    }
+                }
+
+                document.getElementById('att-calendar').innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById('att-calendar').innerHTML =
+                    '<p class="col-span-7 text-red-400 text-sm text-center py-4">Failed to load attendance.</p>';
+            });
+    }
+
+    // ── Notifications ─────────────────────────────────────────
+    function loadNotifications() {
+        const list   = document.getElementById('notification-list');
+        const notifs = [
+            { title: 'Fee Reminder',  msg: 'Your mess bill for Jan 2026 is due.',          icon: 'fa-circle-exclamation', color: 'red'    },
+            { title: 'Room Change',   msg: 'Request #442 status updated to: In Progress.', icon: 'fa-clock',              color: 'blue'   },
+            { title: 'New Notice',    msg: 'Warden meeting scheduled 5 Feb 2026, 6 PM.',   icon: 'fa-bullhorn',           color: 'purple' }
+        ];
+        document.getElementById('notif-dot').classList.remove('hidden');
+        list.innerHTML = notifs.map(n => `
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 border-l-4 border-l-${n.color}-500 flex gap-4 hover:shadow-md transition-shadow">
+                <div class="w-10 h-10 rounded-full bg-${n.color}-100 text-${n.color}-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid ${n.icon}"></i></div>
+                <div class="flex-1"><h4 class="font-bold text-slate-800 text-sm">${n.title}</h4><p class="text-sm text-slate-500 mt-1">${n.msg}</p></div>
+            </div>`).join('');
+    }
+
+    // ── Profile ───────────────────────────────────────────────
+    // FIX: Now shows hostel_name returned from the updated backend
+    function loadProfileData() {
+        const user = getUser();
+        if (!user.id) return;
+
+        const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : '?';
+        document.getElementById('profile-avatar-large').textContent = initials;
+        setInitials(user);
+
+        fetch(`${API}/student/profile/${user.id}`)
+            .then(r => r.json())
+            .then(data => {
+                const p = data.profile;
+                if (!p) return;
+                document.getElementById('profile-name-large').textContent = p.name || user.name || '—';
+                document.getElementById('profile-email').textContent      = p.email     || '—';
+                document.getElementById('profile-phone').textContent      = p.phone_no  || '—';
+                document.getElementById('profile-reg').textContent        = p.student_id || '—';
+                document.getElementById('profile-role').textContent       =
+                    (p.department || '') + (p.year_of_study ? ' • Year ' + p.year_of_study : '');
+                document.getElementById('profile-guardian').textContent   = p.guardian_name || '—';
+                document.getElementById('profile-address').textContent    = p.address || '—';
+
+                // FIX: Show hostel_name (now returned by the updated /student/profile route)
+                document.getElementById('ps-room').textContent   = p.room_number  || 'N/A';
+                document.getElementById('ps-hostel').textContent = p.hostel_name  || 'N/A';
+            })
+            .catch(() => {
+                document.getElementById('profile-email').textContent = user.email || '—';
+            });
+    }
+</script>
+</body>
+</html>
