@@ -15,17 +15,9 @@
         } else {
             try {
                 const payload = JSON.parse(atob(token.split('.')[1]));
+                const user = payload.sub;   // ✅ correct
 
-                let userData = payload.sub;
-
-                // If sub is string, parse it
-                if (typeof userData === "string") {
-                    userData = JSON.parse(userData);
-                }
-
-                const role = userData.role;
-
-                if (role !== "admin") {
+                if (!user || user.role !== "admin") {
                     window.location.href = "login.html";
                 }
 

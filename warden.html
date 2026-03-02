@@ -105,8 +105,12 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
                     <table class="w-full text-left">
                         <thead class="bg-slate-50 border-b border-slate-200">
-                        <tbody id="studentsTableBody" class="divide-y divide-slate-100">
-                        </tbody>
+                            <tr>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Student ID</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Name</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Room</th>
+                                <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Status</th>
+                            </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             <tr class="hover:bg-slate-50">
@@ -164,60 +168,26 @@
     </div>
 
     <script>
-        // Check if user is logged in and is a Warden
+        const token = localStorage.getItem("token");
 
-        async function loadStudents() {
-            const token = localStorage.getItem("token");
-
+        if (!token) {
+            window.location.href = "login.html";
+        } else {
             try {
-                const response = await fetch("http://localhost:5000/warden/students", {
-                    headers: {
-                        "Authorization": "Bearer " + token
-                    }
-                });
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const user = payload.sub;
 
-                const data = await response.json();
-
-                const tbody = document.getElementById("studentsTableBody");
-                tbody.innerHTML = "";
-
-                data.forEach(student => {
-                    tbody.innerHTML += `
-                <tr class="hover:bg-slate-50">
-                    <td class="px-6 py-4 font-medium">${student.id}</td>
-                    <td class="px-6 py-4">${student.name}</td>
-                    <td class="px-6 py-4">Not Assigned</td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-bold rounded">
-                            Active
-                        </span>
-                    </td>
-                </tr>
-            `;
-                });
+                if (!user || user.role !== "warden") {
+                    window.location.href = "login.html";
+                } else {
+                    document.getElementById("wardenNameDisplay").textContent = "Warden";
+                }
 
             } catch (error) {
-                console.error("Error loading students:", error);
+                localStorage.removeItem("token");
+                window.location.href = "login.html";
             }
         }
-
-        window.onload = function () {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                window.location.href = "login.html";
-                return;
-            }
-
-            const payload = JSON.parse(atob(token.split('.')[1]));
-
-            if (payload.sub.role !== "warden") {
-                window.location.href = "login.html";
-                return;
-            }
-
-            loadStudents();
-        };
 
         function showSection(id, btn) {
             document.querySelectorAll('.section').forEach(sec => sec.classList.add('hidden'));
