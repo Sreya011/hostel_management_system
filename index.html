@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal | Hostel Management System</title>
+    <title>Student Portal | Hostel-Ease</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -866,6 +866,16 @@
     </div>
 
     <script>
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = "login.html";
+        } else {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            if (payload.sub.role !== "student") {
+                window.location.href = "login.html";
+            }
+        }
         // Sidebar Toggle for Mobile
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('overlay');
@@ -886,7 +896,6 @@
         // Add this inside your DOMContentLoaded or script block in index.html
         function loadNotifications() {
             const list = document.getElementById('notification-list');
-            const user = JSON.parse(localStorage.getItem('hms_user')) || { role: 'student' };
 
             let notifs = [
                 { title: 'Fee Reminder', msg: 'Your mess bill for Jan 2026 is due.', type: 'danger', icon: 'fa-circle-exclamation', color: 'red' },
@@ -906,64 +915,94 @@
     `).join('');
         }
 
-        function loadProfileData() {
-            const user = JSON.parse(localStorage.getItem('hms_user'));
-            if (!user) return;
+        async function loadProfileData() {
+            const token = localStorage.getItem("token");
+            if (!token) return;
 
-            // Update Profile UI with data from LocalStorage
-            document.getElementById('profile-name-large').textContent = user.name || "Sreya Merin";
-            document.getElementById('profile-email').textContent = user.email || "sreya@example.com";
-            document.getElementById('profile-reg').textContent = user.id_no || user.id || "2026011";
+            try {
+                const response = await fetch("http://localhost:5000/student/me", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": "Bearer " + token
+                    }
+                });
 
-            // Update Avatar Initials
-            const initials = user.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : "SM";
-            document.getElementById('profile-avatar-large').textContent = initials;
+                if (!response.ok) {
+                    console.error("Failed to fetch profile");
+                    return;
+                }
 
-            // You can add logic here to update stats like room/hostel if they exist in your user object
+                const data = await response.json();
+
+                // Update Sidebar
+                document.querySelector(".font-medium.text-sm.truncate").textContent = data.name;
+                document.querySelector(".text-xs.text-slate-400").textContent = "ID: " + data.id;
+
+                // Update Profile Section
+                document.getElementById("profile-name-large").textContent = data.name;
+                document.getElementById("profile-email").textContent = data.email;
+                document.getElementById("profile-reg").textContent = data.id;
+
+                // Welcome message
+                document.querySelector("#dashboard h2").textContent = "Welcome back, " + data.name + " !";
+
+                // Avatar initials
+                const initials = data.name
+                    .split(" ")
+                    .map(n => n[0])
+                    .join("")
+                    .toUpperCase();
+
+                document.getElementById("profile-avatar-large").textContent = initials;
+
+            } catch (error) {
+                console.error("Error loading profile:", error);
+            }
         }
-
-    
 
         // Section Navigation
         function showSection(sectionId, btnElement) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(el => el.classList.add('hidden'));
 
-    // Show selected section
-    const target = document.getElementById(sectionId);
-    if (target) target.classList.remove('hidden');
+            // Show selected section
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.remove('hidden');
 
-    // Reset nav buttons
-    document.querySelectorAll('.nav-item').forEach(el => {
-        el.classList.remove('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
-        el.classList.add('text-slate-300');
-    });
+            // Reset nav buttons
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
+                el.classList.add('text-slate-300');
+            });
 
-    // Activate clicked button
-    if (btnElement) {
-        btnElement.classList.remove('text-slate-300');
-        btnElement.classList.add('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
-    }
+            // Activate clicked button
+            if (btnElement) {
+                btnElement.classList.remove('text-slate-300');
+                btnElement.classList.add('bg-blue-600/10', 'text-blue-400', 'border-r-4', 'border-blue-500');
+            }
 
-    // Load section-specific data
-    if (sectionId === 'profile') loadProfileData();
-    if (sectionId === 'notifications') loadNotifications();
+            // Load section-specific data
+            if (sectionId === 'profile') loadProfileData();
+            if (sectionId === 'notifications') loadNotifications();
 
-    // Close sidebar on mobile
-    if (window.innerWidth < 768) {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-    }
-}
+            // Close sidebar on mobile
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
 
         function logoutUser() {
             if (confirm('Are you sure you want to logout?')) {
                 // Clear session
-                localStorage.removeItem('hms_user');
+                localStorage.removeItem('token');
                 // Redirect to login page
                 window.location.href = 'login.html';
             }
         }
+        document.addEventListener("DOMContentLoaded", function () {
+            loadProfileData();
+        });
 
     </script>
 </body>
